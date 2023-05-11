@@ -24,7 +24,7 @@ The full scope of the cli-lib is quite large. It provides the ability to manage 
 
 ## API
 
-See [Api Documentation](../../docs/cli-lib/api) for details.
+See [Api Documentation](../../docs/api) for details.
 
 ## Installation
 
