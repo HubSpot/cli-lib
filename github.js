@@ -7,6 +7,7 @@ const { logErrorInstance } = require('./errorHandlers');
 const { extractZipArchive } = require('./archive');
 
 const { GITHUB_RELEASE_TYPES } = require('./lib/constants');
+const { i18n } = require('./lib/lang');
 const { DEFAULT_USER_AGENT_HEADERS } = require('./http/requestOptions');
 
 const GITHUB_AUTH_HEADERS = {
@@ -19,17 +20,28 @@ const GITHUB_AUTH_HEADERS = {
  * @param {String} repoName - name of the github repository
  * @returns {Buffer|Null} Zip data buffer
  */
-async function fetchJsonFromRepository(repoName, filePath) {
+async function fetchJsonFromRepository(
+  repoName = 'HubSpot/hubspot-project-components',
+  filePath,
+  repoPath = false
+) {
   try {
-    const URI = `https://raw.githubusercontent.com/HubSpot/${repoName}/${filePath}`;
+    const URI = `https://raw.githubusercontent.com/${repoName}/${filePath}`;
     logger.debug(`Fetching ${URI}...`);
 
-    return request.get(URI, {
+    return await request.get(URI, {
       json: true,
       headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
     });
   } catch (err) {
-    logger.error('An error occured fetching JSON file.');
+    if (repoPath && err.statusCode === 404) {
+      logger.error(
+        i18n(`cli.lib.prompts.createProjectPrompt.errors.failedToFetchJson`)
+      );
+      process.exit(1);
+    } else {
+      logger.error('An error occured fetching JSON file.');
+    }
     logErrorInstance(err);
   }
   return null;
@@ -124,8 +136,11 @@ async function cloneGitHubRepo(dest, type, repoName, sourceDir, options = {}) {
   return success;
 }
 
-async function getGitHubRepoContentsAtPath(repoName, path) {
-  const contentsRequestUrl = `https://api.github.com/repos/HubSpot/${repoName}/contents/${path}`;
+async function getGitHubRepoContentsAtPath(
+  repoPath = 'HubSpot/hubspot-project-components',
+  path
+) {
+  const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}`;
 
   return request.get(contentsRequestUrl, {
     json: true,
@@ -138,7 +153,7 @@ async function fetchGitHubRepoContentFromDownloadUrl(dest, downloadUrl) {
     headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
   });
 
-  fs.writeFileSync(dest, resp, 'utf8');
+  fs.outputFileSync(dest, resp, 'utf8');
 }
 
 /**
@@ -164,8 +179,12 @@ async function downloadGitHubRepoContents(
       contentPath
     );
 
-    const downloadContent = async contentPiece => {
-      const { path: contentPiecePath, download_url } = contentPiece;
+    const downloadContentRecursively = async contentPiece => {
+      const {
+        path: contentPiecePath,
+        download_url,
+        type: contentPieceType,
+      } = contentPiece;
       const downloadPath = path.join(
         dest,
         contentPiecePath.replace(contentPath, '')
@@ -182,18 +201,34 @@ async function downloadGitHubRepoContents(
         `Downloading content piece: ${contentPiecePath} from ${download_url} to ${downloadPath}`
       );
 
-      return fetchGitHubRepoContentFromDownloadUrl(downloadPath, download_url, {
-        headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
-      });
+      if (contentPieceType === 'dir') {
+        const innerDirContent = await getGitHubRepoContentsAtPath(
+          repoName,
+          contentPiecePath
+        );
+        return Promise.all(innerDirContent.map(downloadContentRecursively));
+      } else {
+        return fetchGitHubRepoContentFromDownloadUrl(
+          downloadPath,
+          download_url,
+          {
+            headers: {
+              ...DEFAULT_USER_AGENT_HEADERS,
+              ...GITHUB_AUTH_HEADERS,
+            },
+          }
+        );
+      }
     };
 
-    if (contentsResp.download_url) {
-      return downloadContent(contentsResp);
+    let contentPromises;
+    if (Array.isArray(contentsResp)) {
+      contentPromises = contentsResp.map(downloadContentRecursively);
+      return Promise.all(contentPromises);
+    } else {
+      contentPromises = downloadContentRecursively(contentsResp);
+      return Promise.resolve(contentPromises);
     }
-
-    const contentPromises = contentsResp.map(downloadContent);
-
-    return Promise.all(contentPromises);
   } catch (e) {
     if (e.statusCode === 404) {
       if (e.error.message) {
@@ -201,7 +236,7 @@ async function downloadGitHubRepoContents(
       }
     }
 
-    throw new Error(`Failed to fetch contents: ${e.error.message}`);
+    throw new Error(e);
   }
 }
 
