@@ -1,12 +1,17 @@
 {
   "name": "@hubspot/cli-lib",
-  "version": "4.1.8",
+  "version": "4.1.9",
   "description": "Library for creating scripts for working with HubSpot",
   "license": "Apache-2.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/HubSpot/hubspot-cms-tools"
+  },
+  "scripts": {
+    "release:major": "npm version $(semver $npm_package_version -i major) && npm publish --tag latest",
+    "release:minor": "npm version $(semver $npm_package_version -i minor) && npm publish --tag latest",
+    "release:patch": "npm version $(semver $npm_package_version -i patch) && npm publish --tag latest"
   },
   "dependencies": {
     "chalk": "^2.4.2",
