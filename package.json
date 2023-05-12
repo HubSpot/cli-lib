@@ -10,6 +10,8 @@
   },
   "scripts": {
     "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on master branch' && exit 1)",
+    "lint": "eslint . && prettier --list-different packages/**/*.{js,json}",
+    "prettier:write": "prettier --write packages/**/*.{js,json}",
     "release:major": "npm run check-main && npm version $(semver $npm_package_version -i major) && npm publish --tag latest",
     "release:minor": "npm run check-main && npm version $(semver $npm_package_version -i minor) && npm publish --tag latest",
     "release:patch": "npm run check-main && npm version $(semver $npm_package_version -i patch) && npm publish --tag latest",
@@ -34,6 +36,15 @@
     "semver": "^6.3.0",
     "table": "^6.6.0",
     "unixify": "1.0.0"
+  },
+  "devDependencies": {
+    "lint-staged": "^10.5.4",
+    "prettier": "^1.19.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "engines": {
     "node": ">=10"
