@@ -13,6 +13,7 @@
     "lint": "eslint . && prettier --list-different packages/**/*.{js,json}",
     "prettier:write": "prettier --write packages/**/*.{js,json}",
     "push-new-version": "git add . && git commit -m '$npm_package_version'",
+    "postpush-new-version": "git push origin prep-for-release",
     "release:major": "npm run check-main && npm version major && npm publish --tag latest && npm run push-new-version",
     "release:minor": "npm run check-main && npm version minor && npm publish --tag latest && npm run push-new-version",
     "release:patch": "npm run check-main && npm version patch && npm publish --dry-run --tag latest && npm run push-new-version",
