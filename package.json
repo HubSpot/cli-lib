@@ -1,12 +1,21 @@
 {
   "name": "@hubspot/cli-lib",
-  "version": "4.1.8-beta.0",
+  "version": "4.1.9",
   "description": "Library for creating scripts for working with HubSpot",
   "license": "Apache-2.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/HubSpot/hubspot-cms-tools"
+  },
+  "scripts": {
+    "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on master branch' && exit 1)",
+    "lint": "eslint . && prettier --list-different packages/**/*.{js,json}",
+    "prettier:write": "prettier --write packages/**/*.{js,json}",
+    "release:major": "npm run check-main && npm version $(semver $npm_package_version -i major) && npm publish --tag latest",
+    "release:minor": "npm run check-main && npm version $(semver $npm_package_version -i minor) && npm publish --tag latest",
+    "release:patch": "npm run check-main && npm version $(semver $npm_package_version -i patch) && npm publish --tag latest",
+    "test": "jest"
   },
   "dependencies": {
     "chalk": "^2.4.2",
@@ -17,6 +26,7 @@
     "findup-sync": "^3.0.0",
     "fs-extra": "^8.1.0",
     "ignore": "^5.1.4",
+    "jest": "^26.6.3",
     "js-yaml": "^4.1.0",
     "moment": "^2.24.0",
     "p-queue": "^6.0.2",
@@ -26,6 +36,15 @@
     "semver": "^6.3.0",
     "table": "^6.6.0",
     "unixify": "1.0.0"
+  },
+  "devDependencies": {
+    "lint-staged": "^10.5.4",
+    "prettier": "^1.19.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "engines": {
     "node": ">=10"
