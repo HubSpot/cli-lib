@@ -1,6 +1,6 @@
 {
   "name": "@hubspot/cli-lib",
-  "version": "4.1.9",
+  "version": "4.1.8-beta.3",
   "description": "Library for creating scripts for working with HubSpot",
   "license": "Apache-2.0",
   "main": "index.js",
@@ -9,12 +9,13 @@
     "url": "https://github.com/HubSpot/hubspot-cms-tools"
   },
   "scripts": {
-    "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on master branch' && exit 1)",
+    "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = prep-for-release ] || (echo 'Error: New release can only be published on master branch' && exit 1)",
     "lint": "eslint . && prettier --list-different packages/**/*.{js,json}",
     "prettier:write": "prettier --write packages/**/*.{js,json}",
-    "release:major": "npm run check-main && npm version $(semver $npm_package_version -i major) && npm publish --tag latest",
-    "release:minor": "npm run check-main && npm version $(semver $npm_package_version -i minor) && npm publish --tag latest",
-    "release:patch": "npm run check-main && npm version $(semver $npm_package_version -i patch) && npm publish --tag latest",
+    "push-new-version": "git add . && git commit -m '$npm_package_version' && git push origin prep-for-release",
+    "release:major": "npm run check-main && npm version major && npm publish --tag latest && npm run push-new-version",
+    "release:minor": "npm run check-main && npm version minor && npm publish --tag latest && npm run push-new-version",
+    "release:patch": "npm run check-main && npm version patch && npm publish --dry-run --tag latest && npm run push-new-version",
     "test": "jest"
   },
   "dependencies": {
