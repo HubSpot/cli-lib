@@ -10,12 +10,14 @@
   },
   "scripts": {
     "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on main branch' && exit 1)",
+    "build": "rm -rf dist && mkdir dist && cp -r {src/*,package.json,LICENSE,README.md} dist",
     "lint": "eslint . && prettier --list-different packages/**/*.{js,json}",
     "prettier:write": "prettier --write packages/**/*.{js,json}",
-    "push": "git push origin main",
-    "release:major": "npm run check-main && npm version major && npm publish --tag latest && npm run push",
-    "release:minor": "npm run check-main && npm version minor && npm publish --tag latest && npm run push",
-    "release:patch": "npm run check-main && npm version patch && npm publish --tag latest && npm run push",
+    "pub": "npm run build && cd dist && npm publish --tag latest",
+    "push": "git push --atomic origin main v$npm_package_version",
+    "release:major": "npm run check-main && npm version major && npm run pub && npm run push",
+    "release:minor": "npm run check-main && npm version minor && npm run pub && npm run push",
+    "release:patch": "npm run check-main && npm version patch && npm run pub && npm run push",
     "test": "jest"
   },
   "dependencies": {
@@ -52,8 +54,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "files": [
-    "src/*"
-  ]
+  }
 }
