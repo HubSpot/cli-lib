@@ -1,5 +1,11 @@
-const safeRequire = require('../safeRequire');
-const packageJSON = safeRequire('../package.json', '../../package.json');
+let packageJSON;
+try {
+  packageJSON = require('../package.json');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    packageJSON = require('../../package.json');
+  }
+}
 const { getAndLoadConfigIfNeeded } = require('../lib/config');
 const { getHubSpotApiOrigin } = require('../lib/urls');
 
