@@ -2,10 +2,13 @@ const requestPN = require('request-promise-native');
 const request = require('request');
 const fs = require('fs-extra');
 const moment = require('moment');
+const safeRequire = require('../safeRequire');
 const { getAndLoadConfigIfNeeded, getAccountConfig } = require('../lib/config');
 const { ENVIRONMENTS } = require('../lib/constants');
 const http = require('../http');
-const { version } = require('../../package.json');
+const packageJSON = safeRequire('../../package.json', '../package.json');
+
+const version = packageJSON ? packageJSON.version : null;
 
 jest.mock('request-promise-native', () => ({
   get: jest.fn().mockReturnValue(Promise.resolve()),

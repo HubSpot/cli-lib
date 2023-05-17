@@ -1,6 +1,9 @@
-const { version } = require('../../package.json');
+const safeRequire = require('../safeRequire');
+const packageJSON = safeRequire('../package.json', '../../package.json');
 const { getAndLoadConfigIfNeeded } = require('../lib/config');
 const { getHubSpotApiOrigin } = require('../lib/urls');
+
+const version = packageJSON ? packageJSON.version : null;
 
 const DEFAULT_USER_AGENT_HEADERS = {
   'User-Agent': `HubSpot CLI/${version}`,
