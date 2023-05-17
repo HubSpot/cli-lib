@@ -5,7 +5,7 @@ const moment = require('moment');
 const { getAndLoadConfigIfNeeded, getAccountConfig } = require('../lib/config');
 const { ENVIRONMENTS } = require('../lib/constants');
 const http = require('../http');
-const { version } = require('../package.json');
+const { version } = require('../../package.json');
 
 jest.mock('request-promise-native', () => ({
   get: jest.fn().mockReturnValue(Promise.resolve()),

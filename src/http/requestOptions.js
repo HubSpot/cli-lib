@@ -1,4 +1,4 @@
-const { version } = require('../package.json');
+const { version } = require('../../package.json');
 const { getAndLoadConfigIfNeeded } = require('../lib/config');
 const { getHubSpotApiOrigin } = require('../lib/urls');
 
