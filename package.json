@@ -9,13 +9,13 @@
     "url": "https://github.com/HubSpot/hubspot-cms-tools"
   },
   "scripts": {
-    "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on main branch' && exit 1)",
+    "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = test-release ] || (echo 'Error: New release can only be published on main branch' && exit 1)",
     "lint": "eslint . && prettier --list-different packages/**/*.{js,json}",
     "prettier:write": "prettier --write packages/**/*.{js,json}",
-    "push": "git push origin main",
+    "push": "git push origin test-release",
     "release:major": "npm run check-main && npm version major && npm publish --tag latest && npm run push",
     "release:minor": "npm run check-main && npm version minor && npm publish --tag latest && npm run push",
-    "release:patch": "npm run check-main && npm version patch && npm publish --tag latest && npm run push",
+    "release:patch": "npm run check-main && npm version patch && npm publish --dry-run --tag latest && npm run push",
     "test": "jest"
   },
   "dependencies": {
