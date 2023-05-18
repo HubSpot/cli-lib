@@ -77,6 +77,8 @@ class ApiErrorContext extends ErrorContext {
     this.request = props.request || '';
     /** @type {string} */
     this.payload = props.payload || '';
+    /** @type {string} */
+    this.projectName = props.projectName || '';
   }
 }
 
@@ -132,6 +134,7 @@ const ApiMethodPrepositions = {
 function logApiStatusCodeError(error, context) {
   const { statusCode } = error;
   const { method } = error.options || {};
+  const { projectName } = context;
   const isPutOrPost = method === 'PUT' || method === 'POST';
   const action = ApiMethodVerbs[method] || ApiMethodVerbs.DEFAULT;
   const preposition =
@@ -155,7 +158,13 @@ function logApiStatusCodeError(error, context) {
       errorMessage.push(`The ${messageDetail} was unauthorized.`);
       break;
     case 403:
-      errorMessage.push(`The ${messageDetail} was forbidden.`);
+      if (isMissingScopeError(error) && projectName) {
+        errorMessage.push(
+          `Couldn\'t run the project command because there are scopes missing in your production account. To update scopes, deactivate your current personal access key for ${context.accountId}, and generate a new one. Then run \`hs auth\` to update the CLI with the new key.`
+        );
+      } else {
+        errorMessage.push(`The ${messageDetail} was forbidden.`);
+      }
       break;
     case 404:
       if (context.request) {
@@ -188,7 +197,7 @@ function logApiStatusCodeError(error, context) {
       }
       break;
   }
-  if (error.error && error.error.message) {
+  if (error.error && error.error.message && !projectName) {
     errorMessage.push(error.error.message);
   }
   if (error.error && error.error.errors) {
@@ -300,3 +309,4 @@ module.exports = {
   isMissingScopeError,
   isSpecifiedError,
 };
+
