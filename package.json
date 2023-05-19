@@ -10,18 +10,14 @@
   },
   "scripts": {
     "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on main branch' && exit 1)",
-    "build": "rm -rf dist && mkdir dist && cp -r {src/*,package.json,LICENSE,README.md} dist",
     "lint": "eslint . && prettier --list-different packages/**/*.{js,json}",
-    "local-dev": "cd dist && yarn link --silent && cd .. && yarn watch",
-    "postlocal-dev": "cd dist && yarn unlink",
     "prettier:write": "prettier --write packages/**/*.{js,json}",
-    "pub": "yarn build && cd dist && yarn publish --tag latest",
+    "pub": "yarn publish --tag latest",
     "push": "git push --atomic origin main v$npm_package_version",
     "release:major": "yarn check-main && yarn version --major && yarn pub && yarn push",
     "release:minor": "yarn check-main && yarn version --minor && yarn pub && yarn push",
     "release:patch": "yarn check-main && yarn version --patch && yarn pub && yarn push",
-    "test": "jest",
-    "watch": "nodemon -e js --watch src --exec 'yarn build'"
+    "test": "jest"
   },
   "dependencies": {
     "chalk": "^2.4.2",
@@ -45,7 +41,6 @@
   },
   "devDependencies": {
     "lint-staged": "^10.5.4",
-    "nodemon": "^2.0.22",
     "prettier": "^1.19.1"
   },
   "husky": {
