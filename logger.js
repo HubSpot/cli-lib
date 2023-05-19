@@ -37,7 +37,6 @@ class Logger {
     console.warn(...stylize('[WARNING]', Styles.warn, args));
   }
   log(...args) {
-    console.log('DOES THIS WORK');
     console.log(...args);
   }
   success(...args) {
