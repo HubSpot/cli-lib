@@ -1,0 +1,12 @@
+__mocks__
+__tests__
+.github
+coverage
+docs
+examples
+node_modules
+.eslintignore
+.eslintrc.js
+CHANGELOG.md
+jest.config.js
+prettier.config.js

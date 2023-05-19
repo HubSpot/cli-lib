@@ -5,16 +5,7 @@ const moment = require('moment');
 const { getAndLoadConfigIfNeeded, getAccountConfig } = require('../lib/config');
 const { ENVIRONMENTS } = require('../lib/constants');
 const http = require('../http');
-let packageJSON;
-try {
-  packageJSON = require('../package.json');
-} catch (e) {
-  if (e.code === 'MODULE_NOT_FOUND') {
-    packageJSON = require('../../package.json');
-  }
-}
-
-const version = packageJSON ? packageJSON.version : null;
+const { version } = require('../package.json');
 
 jest.mock('request-promise-native', () => ({
   get: jest.fn().mockReturnValue(Promise.resolve()),
