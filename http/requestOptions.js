@@ -1,6 +1,15 @@
-const { version } = require('../../package.json');
+let packageJSON;
+try {
+  packageJSON = require('../package.json');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    packageJSON = require('../../package.json');
+  }
+}
 const { getAndLoadConfigIfNeeded } = require('../lib/config');
 const { getHubSpotApiOrigin } = require('../lib/urls');
+
+const version = packageJSON ? packageJSON.version : null;
 
 const DEFAULT_USER_AGENT_HEADERS = {
   'User-Agent': `HubSpot CLI/${version}`,
