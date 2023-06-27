@@ -10,3 +10,4 @@ node_modules
 CHANGELOG.md
 jest.config.js
 prettier.config.js
+yarn.lock
