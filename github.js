@@ -231,13 +231,13 @@ async function downloadGitHubRepoContents(
     }
   } catch (e) {
     if (e.statusCode === 404) {
-      if (e.error.message) {
+      if (e.error && e.error.message) {
         throw new Error(`Failed to fetch contents: ${e.error.message}`);
       }
     }
 
     if (e.statusCode >= 500 && e.statusCode <= 599) {
-      if (e.error.message) {
+      if (e.error && e.error.message) {
         throw new Error(`Failed to fetch contents: ${e.error.message}`);
       } else {
         throw new Error('Failed to fetch contents: Check the status of GitHub');
