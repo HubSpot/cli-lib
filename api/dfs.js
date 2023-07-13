@@ -1,5 +1,6 @@
 const http = require('../http');
 const fs = require('fs');
+const { DEFAULT_PLATFORM_VERSION } = require('../lib/constants');
 
 const PROJECTS_API_PATH = 'dfs/v1/projects';
 const PROJECTS_DEPLOY_API_PATH = 'dfs/deploy/v1';
@@ -43,11 +44,13 @@ async function createProject(accountId, name) {
  * @param {string} projectFile
  * @returns {Promise}
  */
+
 async function uploadProject(
   accountId,
   projectName,
   projectFile,
-  uploadMessage
+  uploadMessage,
+  platformVersion = DEFAULT_PLATFORM_VERSION
 ) {
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/upload/${encodeURIComponent(projectName)}`,
@@ -55,6 +58,7 @@ async function uploadProject(
     formData: {
       file: fs.createReadStream(projectFile),
       uploadMessage,
+      platformVersion,
     },
   });
 }
@@ -244,11 +248,15 @@ async function fetchDeployComponentsMetadata(accountId, projectId) {
  * @param {string} projectName
  * @returns {Promise}
  */
-async function provisionBuild(accountId, projectName) {
+async function provisionBuild(
+  accountId,
+  projectName,
+  platformVersion = DEFAULT_PLATFORM_VERSION
+) {
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/staged/provision`,
+    )}/builds/staged/provision?platformVersion=${platformVersion}`,
     timeout: 50000,
   });
 }
@@ -261,11 +269,15 @@ async function provisionBuild(accountId, projectName) {
  * @param {string} projectName
  * @returns {Promise}
  */
-async function queueBuild(accountId, projectName) {
+async function queueBuild(
+  accountId,
+  projectName,
+  platformVersion = DEFAULT_PLATFORM_VERSION
+) {
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/staged/queue`,
+    )}/builds/staged/queue?platformVersion=${platformVersion}`,
   });
 }
 
