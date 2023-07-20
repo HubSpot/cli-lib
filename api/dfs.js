@@ -5,7 +5,7 @@ const { fetchDefaultVersion } = require('../lib/projectPlatformVersion');
 const PROJECTS_API_PATH = 'dfs/v1/projects';
 const PROJECTS_DEPLOY_API_PATH = 'dfs/deploy/v1';
 
-const getDefaultVersion = async (accountId, platformVersion) => {
+const getPlatformVersion = async (accountId, platformVersion) => {
   let defaultVersion = platformVersion;
   if (!platformVersion) {
     defaultVersion = await fetchDefaultVersion(accountId);
@@ -60,7 +60,7 @@ async function uploadProject(
   uploadMessage,
   platformVersion = ''
 ) {
-  const defaultVersion = await getDefaultVersion(accountId, platformVersion);
+  const defaultVersion = await getPlatformVersion(accountId, platformVersion);
 
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/upload/${encodeURIComponent(projectName)}`,
@@ -259,7 +259,7 @@ async function fetchDeployComponentsMetadata(accountId, projectId) {
  * @returns {Promise}
  */
 async function provisionBuild(accountId, projectName, platformVersion = '') {
-  const defaultVersion = await getDefaultVersion(accountId, platformVersion);
+  const defaultVersion = await getPlatformVersion(accountId, platformVersion);
 
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
@@ -278,7 +278,7 @@ async function provisionBuild(accountId, projectName, platformVersion = '') {
  * @returns {Promise}
  */
 async function queueBuild(accountId, projectName, platformVersion = '') {
-  const defaultVersion = await getDefaultVersion(accountId, platformVersion);
+  const defaultVersion = await getPlatformVersion(accountId, platformVersion);
 
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
