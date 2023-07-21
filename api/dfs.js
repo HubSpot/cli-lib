@@ -1,17 +1,8 @@
 const http = require('../http');
 const fs = require('fs');
-const { fetchDefaultVersion } = require('../lib/projectPlatformVersion');
 
 const PROJECTS_API_PATH = 'dfs/v1/projects';
 const PROJECTS_DEPLOY_API_PATH = 'dfs/deploy/v1';
-
-const getPlatformVersion = async (accountId, platformVersion) => {
-  let defaultVersion = platformVersion;
-  if (!platformVersion) {
-    defaultVersion = await fetchDefaultVersion(accountId);
-  }
-  return defaultVersion;
-};
 
 /**
  * Fetch projects
@@ -60,16 +51,16 @@ async function uploadProject(
   uploadMessage,
   platformVersion = ''
 ) {
-  const defaultVersion = await getPlatformVersion(accountId, platformVersion);
-
+  const formData = platformVersion
+    ? { file: fs.createReadStream(projectFile), uploadMessage, platformVersion }
+    : {
+        file: fs.createReadStream(projectFile),
+        uploadMessage,
+      };
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/upload/${encodeURIComponent(projectName)}`,
     timeout: 60000,
-    formData: {
-      file: fs.createReadStream(projectFile),
-      uploadMessage,
-      platformVersion: defaultVersion,
-    },
+    formData,
   });
 }
 
@@ -259,12 +250,14 @@ async function fetchDeployComponentsMetadata(accountId, projectId) {
  * @returns {Promise}
  */
 async function provisionBuild(accountId, projectName, platformVersion = '') {
-  const defaultVersion = await getPlatformVersion(accountId, platformVersion);
+  const platformQueryString = platformVersion
+    ? `?platformVersion=${platformVersion}`
+    : '';
 
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/staged/provision?platformVersion=${defaultVersion}`,
+    )}/builds/staged/provision${platformQueryString}`,
     timeout: 50000,
   });
 }
@@ -278,12 +271,14 @@ async function provisionBuild(accountId, projectName, platformVersion = '') {
  * @returns {Promise}
  */
 async function queueBuild(accountId, projectName, platformVersion = '') {
-  const defaultVersion = await getPlatformVersion(accountId, platformVersion);
+  const platformQueryString = platformVersion
+    ? `?platformVersion=${platformVersion}`
+    : '';
 
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/staged/queue?platformVersion=${defaultVersion}`,
+    )}/builds/staged/queue${platformQueryString}`,
   });
 }
 
