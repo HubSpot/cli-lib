@@ -18,6 +18,7 @@ const {
   fetchFileStream,
   download,
   downloadDefault,
+  getDirectoryContentsByPath,
 } = require('./api/fileMapper');
 const {
   Mode,
@@ -223,6 +224,21 @@ function recurseFolder(node, callback, filepath = '', depth = 0) {
     return __break !== false;
   });
   return depth === 0 ? undefined : __break;
+}
+
+// Performs recursive walk of HubSpot project
+async function doRemoteWalk(accountId, currPath, fileList = []) {
+  const contents = await getDirectoryContentsByPath(accountId, currPath);
+  for (const item of contents.children) {
+    const newFilePath = path.join(currPath, item);
+    if (isPathToFile(item)) {
+      fileList.push(newFilePath);
+    } else {
+      const subDirPath = newFilePath;
+      fileList = await doRemoteWalk(accountId, subDirPath, fileList);
+    }
+  }
+  return fileList;
 }
 
 /**
@@ -546,4 +562,5 @@ module.exports = {
   getFileMapperQueryValues,
   fetchFolderFromApi,
   getTypeDataFromPath,
+  doRemoteWalk,
 };
