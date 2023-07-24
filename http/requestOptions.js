@@ -1,5 +1,5 @@
 const { version } = require('../package.json');
-const { getAndLoadConfigIfNeeded } = require('../lib/config');
+const { getAndLoadConfigIfNeeded } = require('@hubspot/local-dev-lib/config');
 const { getHubSpotApiOrigin } = require('../lib/urls');
 
 const DEFAULT_USER_AGENT_HEADERS = {
