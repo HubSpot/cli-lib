@@ -169,7 +169,7 @@ function logApiStatusCodeError(error, context) {
         );
       } else if (isProjectGatingError) {
         errorMessage.push(
-          `Your production account ${context.accountId} does not have access to HubSpot projects. To opt in to the CRM Development Beta and use projects, visit https://app.hubspot.com/whats-new/40852147/betas?productUpdateId=13860216.`
+          `The current target account ${context.accountId} does not have access to HubSpot projects. To opt in to the CRM Development Beta and use projects, visit https://app.hubspot.com/l/whats-new/betas?productUpdateId=13860216.`
         );
       } else {
         errorMessage.push(`The ${messageDetail} was forbidden.`);
