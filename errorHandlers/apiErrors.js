@@ -30,7 +30,7 @@ const isMissingScopeError = err =>
   err.error.category === 'MISSING_SCOPES';
 
 const isGatingError = err =>
-  err.statusCode === 403 && err.error && err.error.category === 'GATED';
+  isSpecifiedError(err, { statusCode: 403, category: 'GATED' });
 
 const isSpecifiedError = (err, { statusCode, category, subCategory } = {}) => {
   const statusCodeErr = !statusCode || err.statusCode === statusCode;
