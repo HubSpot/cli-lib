@@ -87,7 +87,7 @@ function isAllowedExtension(filepath) {
  * @param {Mode} mode
  */
 function useApiBuffer(mode) {
-  return mode === Mode.draft;
+  return mode === Mode.draft || mode === Mode.preview;
 }
 
 /**
@@ -103,6 +103,7 @@ function getFileMapperQueryValues({ mode, options = {} }) {
       buffer: useApiBuffer(mode),
       environmentId: options.staging ? 2 : 1,
       version: options.assetVersion,
+      previewSession: options.previewSession
     },
   };
 }
