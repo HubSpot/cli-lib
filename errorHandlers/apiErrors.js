@@ -44,6 +44,21 @@ const isSpecifiedError = (err, { statusCode, category, subCategory } = {}) => {
   );
 };
 
+const isSpecifiedHubSpotAuthError = (
+  err,
+  { statusCode, category, subCategory }
+) => {
+  const statusCodeErr = !statusCode || err.statusCode === statusCode;
+  const categoryErr = !category || err.category === category;
+  const subCategoryErr = !subCategory || err.subCategory === subCategory;
+  return (
+    err.name === 'HubSpotAuthError' &&
+    statusCodeErr &&
+    categoryErr &&
+    subCategoryErr
+  );
+};
+
 const contactSupportString =
   'Please try again or visit https://help.hubspot.com/ to submit a ticket or contact HubSpot Support if the issue persists.';
 
@@ -309,4 +324,5 @@ module.exports = {
   logServerlessFunctionApiErrorInstance,
   isMissingScopeError,
   isSpecifiedError,
+  isSpecifiedHubSpotAuthError,
 };
