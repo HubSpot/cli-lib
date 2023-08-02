@@ -88,21 +88,11 @@ async function fetchProject(accountId, projectName) {
  * @param {string} projectName
  * @returns {Promise}
  */
-async function downloadProject(
-  accountId,
-  projectName,
-  buildId,
-  platformVersion
-) {
-  const requestString = platformVersion
-    ? `${PROJECTS_API_PATH}/${encodeURIComponent(
-        projectName
-      )}/builds/${buildId}/archive-full?platformVersion=${platformVersion}`
-    : `${PROJECTS_API_PATH}/${encodeURIComponent(
-        projectName
-      )}/builds/${buildId}/archive-full`;
+async function downloadProject(accountId, projectName, buildId) {
   return http.get(accountId, {
-    uri: requestString,
+    uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
+      projectName
+    )}/builds/${buildId}/archive-full`,
     encoding: null,
     headers: { accept: 'application/zip', contentType: 'application/json' },
   });
