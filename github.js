@@ -15,18 +15,23 @@ const GITHUB_AUTH_HEADERS = {
     global && global.githubToken ? `Bearer ${global.githubToken}` : null,
 };
 
+const getRefQuery = ref => (ref ? `?ref=${ref}` : '');
+
 /**
  * @param {String} filePath - path where config file is stored
  * @param {String} repoName - name of the github repository
+ * @param {boolean} isCustomPath - true if users pass a path flag to the CLI
+ * @param {String | undefined} - branch to fetch from. if undefined, default branch used
  * @returns {Buffer|Null} Zip data buffer
  */
 async function fetchJsonFromRepository(
-  repoName = 'HubSpot/hubspot-project-components',
+  repoName,
   filePath,
-  repoPath = false
+  ref,
+  isCustomPath = false
 ) {
   try {
-    const URI = `https://raw.githubusercontent.com/${repoName}/${filePath}`;
+    const URI = `https://raw.githubusercontent.com/${repoName}/${ref}/${filePath}`;
     logger.debug(`Fetching ${URI}...`);
 
     return await request.get(URI, {
@@ -34,7 +39,7 @@ async function fetchJsonFromRepository(
       headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
     });
   } catch (err) {
-    if (repoPath && err.statusCode === 404) {
+    if (isCustomPath && err.statusCode === 404) {
       logger.error(
         i18n(`cli.lib.prompts.createProjectPrompt.errors.failedToFetchJson`)
       );
@@ -136,11 +141,10 @@ async function cloneGitHubRepo(dest, type, repoName, sourceDir, options = {}) {
   return success;
 }
 
-async function getGitHubRepoContentsAtPath(
-  repoPath = 'HubSpot/hubspot-project-components',
-  path
-) {
-  const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}`;
+async function getGitHubRepoContentsAtPath(repoPath, path, ref) {
+  const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}${getRefQuery(
+    ref
+  )}`;
 
   return request.get(contentsRequestUrl, {
     json: true,
@@ -169,6 +173,7 @@ async function downloadGitHubRepoContents(
   dest,
   options = {
     filter: false,
+    ref: '',
   }
 ) {
   fs.ensureDirSync(path.dirname(dest));
@@ -176,7 +181,8 @@ async function downloadGitHubRepoContents(
   try {
     const contentsResp = await getGitHubRepoContentsAtPath(
       repoName,
-      contentPath
+      contentPath,
+      options.ref
     );
 
     const downloadContentRecursively = async contentPiece => {
