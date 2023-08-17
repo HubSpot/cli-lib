@@ -15,8 +15,6 @@ const GITHUB_AUTH_HEADERS = {
     global && global.githubToken ? `Bearer ${global.githubToken}` : null,
 };
 
-const getRefQuery = ref => (ref ? `?ref=${ref}` : '');
-
 /**
  * @param {String} filePath - path where config file is stored
  * @param {String} repoName - name of the github repository
@@ -142,9 +140,8 @@ async function cloneGitHubRepo(dest, type, repoName, sourceDir, options = {}) {
 }
 
 async function getGitHubRepoContentsAtPath(repoPath, path, ref) {
-  const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}${getRefQuery(
-    ref
-  )}`;
+  const refQuery = ref ? `?ref=${ref}` : '';
+  const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}${refQuery}`;
 
   return request.get(contentsRequestUrl, {
     json: true,
