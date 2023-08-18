@@ -61,9 +61,10 @@ async function fetchReleaseData(repoName, tag = '') {
     tag = `v${tag}`;
   }
   const URI = tag
-    ? `https://api.github.com/repos/HubSpot/${repoName}/releases/tags/${tag}`
-    : `https://api.github.com/repos/HubSpot/${repoName}/releases/latest`;
+    ? `https://api.github.com/repos/${repoName}/releases/tags/${tag}`
+    : `https://api.github.com/repos/${repoName}/releases/latest`;
   try {
+    console.log(URI);
     return await request.get(URI, {
       headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
       json: true,
@@ -95,7 +96,7 @@ async function downloadGithubRepoZip(
     let zipUrl;
     if (releaseType === GITHUB_RELEASE_TYPES.REPOSITORY) {
       logger.log(`Fetching ${releaseType} with name ${repoName}...`);
-      zipUrl = `https://api.github.com/repos/HubSpot/${repoName}/zipball${
+      zipUrl = `https://api.github.com/repos/${repoName}/zipball${
         ref ? `/${ref}` : ''
       }`;
     } else {
@@ -255,4 +256,5 @@ module.exports = {
   cloneGitHubRepo,
   downloadGitHubRepoContents,
   fetchJsonFromRepository,
+  fetchReleaseData,
 };
