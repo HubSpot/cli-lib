@@ -64,7 +64,6 @@ async function fetchReleaseData(repoName, tag = '') {
     ? `https://api.github.com/repos/${repoName}/releases/tags/${tag}`
     : `https://api.github.com/repos/${repoName}/releases/latest`;
   try {
-    console.log(URI);
     return await request.get(URI, {
       headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
       json: true,
