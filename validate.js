@@ -32,6 +32,7 @@ async function lint(accountId, filepath, callback) {
           return result;
         }
         const validation = await validateHubl(accountId, source);
+
         const result = {
           file,
           validation,
@@ -59,15 +60,13 @@ function printHublValidationResult({ file, validation }) {
   if (!errors.length) {
     return count;
   }
-  logger.group(file);
   errors.forEach(err => {
-    if (err.reason !== 'SYNTAX_ERROR') {
+    if (err.reason !== 'SYNTAX_ERROR' && err.category !== 'DEPRECATED_MODULE') {
       return;
     }
     ++count;
     printHublValidationError(err);
   });
-  logger.groupEnd(file);
   return count;
 }
 
