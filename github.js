@@ -207,7 +207,8 @@ async function downloadGitHubRepoContents(
       if (contentPieceType === 'dir') {
         const innerDirContent = await getGitHubRepoContentsAtPath(
           repoName,
-          contentPiecePath
+          contentPiecePath,
+          options.ref
         );
         return Promise.all(innerDirContent.map(downloadContentRecursively));
       } else {
