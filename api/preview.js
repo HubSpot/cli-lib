@@ -104,27 +104,22 @@ const fetchContentMetadata = async (
 ) => {
   let res;
   if (url.includes('hs_preview')) {
-    console.log('hellox')
     res = await requestContentPreview(url, portalId);
   } else {
-    console.log('helloy')
     res = await requestPage(url);
-    console.log(res.headers)
-    console.log('past page req')
   }
 
   const portalIdHeader = res.headers['x-hs-hub-id'];
   const contentId = res.headers['x-hs-content-id'];
-  console.log(`${portalIdHeader} ${contentId}`)
+
   if (Array.isArray(portalIdHeader) || Array.isArray(contentId)) {
     throw new Error(
       `There were multiple hub ID or content ID headers in the HEAD request to ${url}`
     );
   } else {
     const portalIdFromResponse = parseInt(portalIdHeader, 10);
-    console.log(`${portalIdFromResponse}`)
     const pageAccount = await getAccountId(portalIdFromResponse);
-    console.log(`${portalIdFromResponse} ${pageAccount}`)
+
     if (!pageAccount) {
       throw new Error(
         `No CLI auth for portal ${portalIdFromResponse} found, please run \`hs auth\``
