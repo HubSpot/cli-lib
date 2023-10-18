@@ -92,9 +92,9 @@ async function downloadProject(accountId, projectName, buildId) {
   return http.get(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/${buildId}/archive`,
+    )}/builds/${buildId}/archive-full`,
     encoding: null,
-    headers: { accept: 'application/octet-stream' },
+    headers: { accept: 'application/zip', contentType: 'application/json' },
   });
 }
 

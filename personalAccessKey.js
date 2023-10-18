@@ -33,7 +33,7 @@ async function getAccessToken(
     response = await fetchAccessToken(personalAccessKey, env, accountId);
   } catch (e) {
     if (e.response) {
-      const errorOutput = `Error while retrieving new access token: ${e.response.body.message}.`;
+      const errorOutput = `Error while retrieving new access token: ${e.response.body.message}`;
       throw new HubSpotAuthError(errorOutput, e.response);
     } else {
       throw e;

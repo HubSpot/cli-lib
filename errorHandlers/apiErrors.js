@@ -30,6 +30,9 @@ const isMissingScopeError = err =>
   err.error &&
   err.error.category === 'MISSING_SCOPES';
 
+const isGatingError = err =>
+  isSpecifiedError(err, { statusCode: 403, category: 'GATED' });
+
 const isSpecifiedError = (err, { statusCode, category, subCategory } = {}) => {
   const statusCodeErr = !statusCode || err.statusCode === statusCode;
   const categoryErr =
@@ -39,6 +42,21 @@ const isSpecifiedError = (err, { statusCode, category, subCategory } = {}) => {
 
   return (
     err.name === 'StatusCodeError' &&
+    statusCodeErr &&
+    categoryErr &&
+    subCategoryErr
+  );
+};
+
+const isSpecifiedHubSpotAuthError = (
+  err,
+  { statusCode, category, subCategory }
+) => {
+  const statusCodeErr = !statusCode || err.statusCode === statusCode;
+  const categoryErr = !category || err.category === category;
+  const subCategoryErr = !subCategory || err.subCategory === subCategory;
+  return (
+    err.name === 'HubSpotAuthError' &&
     statusCodeErr &&
     categoryErr &&
     subCategoryErr
@@ -152,6 +170,7 @@ function logApiStatusCodeError(error, context) {
     errorMessage.push(`Unable to upload "${context.payload}".`);
   }
   const isProjectMissingScopeError = isMissingScopeError(error) && projectName;
+  const isProjectGatingError = isGatingError(error) && projectName;
   switch (statusCode) {
     case 400:
       errorMessage.push(`The ${messageDetail} was bad.`);
@@ -163,6 +182,10 @@ function logApiStatusCodeError(error, context) {
       if (isProjectMissingScopeError) {
         errorMessage.push(
           `Couldn\'t run the project command because there are scopes missing in your production account. To update scopes, deactivate your current personal access key for ${context.accountId}, and generate a new one. Then run \`hs auth\` to update the CLI with the new key.`
+        );
+      } else if (isProjectGatingError) {
+        errorMessage.push(
+          `The current target account ${context.accountId} does not have access to HubSpot projects. To opt in to the CRM Development Beta and use projects, visit https://app.hubspot.com/l/whats-new/betas?productUpdateId=13860216.`
         );
       } else {
         errorMessage.push(`The ${messageDetail} was forbidden.`);
@@ -199,7 +222,12 @@ function logApiStatusCodeError(error, context) {
       }
       break;
   }
-  if (error.error && error.error.message && !isProjectMissingScopeError) {
+  if (
+    error.error &&
+    error.error.message &&
+    !isProjectMissingScopeError &&
+    !isProjectGatingError
+  ) {
     errorMessage.push(error.error.message);
   }
   if (error.error && error.error.errors) {
@@ -310,4 +338,5 @@ module.exports = {
   logServerlessFunctionApiErrorInstance,
   isMissingScopeError,
   isSpecifiedError,
+  isSpecifiedHubSpotAuthError,
 };
