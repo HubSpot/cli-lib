@@ -21,7 +21,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@hubspot/local-dev-lib": "0.0.5",
+    "@hubspot/local-dev-lib": "0.0.7",
     "chalk": "^2.4.2",
     "chokidar": "^3.0.1",
     "content-disposition": "^0.5.3",
