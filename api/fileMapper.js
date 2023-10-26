@@ -4,7 +4,7 @@ const path = require('path');
 const contentDisposition = require('content-disposition');
 const http = require('../http');
 const { getCwd } = require('../path');
-const { getEnv, getAccountConfig } = require('../lib/config');
+const { getEnv, getAccountConfig } = require('@hubspot/local-dev-lib/config');
 const { logger } = require('../logger');
 
 const FILE_MAPPER_API_PATH = 'content/filemapper/v1';
