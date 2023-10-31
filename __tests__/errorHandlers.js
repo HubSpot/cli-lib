@@ -1,5 +1,5 @@
 const { StatusCodeError } = require('request-promise-native/errors');
-const { getAccountConfig } = require('../lib/config');
+const { getAccountConfig } = require('@hubspot/local-dev-lib/config');
 const { fetchScopeData } = require('../api/localDevAuth/authenticated');
 const {
   ApiErrorContext,
@@ -9,7 +9,7 @@ const {
 } = require('../errorHandlers');
 const { LOG_LEVEL, logger } = require('../logger');
 
-jest.mock('../lib/config');
+jest.mock('@hubspot/local-dev-lib/config');
 jest.mock('../logger');
 jest.mock('../api/localDevAuth/authenticated');
 

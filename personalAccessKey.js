@@ -1,12 +1,13 @@
 const moment = require('moment');
-const { HubSpotAuthError } = require('./lib/models/Errors');
 const {
   getEnv,
   getAccountConfig,
   updateAccountConfig,
   updateDefaultAccount,
   writeConfig,
-} = require('./lib/config');
+} = require('@hubspot/local-dev-lib/config');
+
+const { HubSpotAuthError } = require('./lib/models/Errors');
 const { getValidEnv } = require('./lib/environment');
 const {
   PERSONAL_ACCESS_KEY_AUTH_METHOD,

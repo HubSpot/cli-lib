@@ -1,4 +1,3 @@
-const { ALLOWED_EXTENSIONS, Mode, DEFAULT_MODE } = require('./lib/constants');
 const {
   getAndLoadConfigIfNeeded,
   getConfig,
@@ -14,7 +13,9 @@ const {
   isConfigFlagEnabled,
   isTrackingAllowed,
   writeConfig,
-} = require('./lib/config');
+} = require('@hubspot/local-dev-lib/config');
+
+const { ALLOWED_EXTENSIONS, Mode, DEFAULT_MODE } = require('./lib/constants');
 const { checkAndWarnGitInclusion } = require('./lib/git');
 const { hasUploadErrors, uploadFolder } = require('./lib/uploadFolder');
 const { watch } = require('./lib/watch');

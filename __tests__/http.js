@@ -2,7 +2,10 @@ const requestPN = require('request-promise-native');
 const request = require('request');
 const fs = require('fs-extra');
 const moment = require('moment');
-const { getAndLoadConfigIfNeeded, getAccountConfig } = require('../lib/config');
+const {
+  getAndLoadConfigIfNeeded,
+  getAccountConfig,
+} = require('@hubspot/local-dev-lib/config');
 const { ENVIRONMENTS } = require('../lib/constants');
 const http = require('../http');
 const { version } = require('../package.json');
@@ -13,7 +16,7 @@ jest.mock('request-promise-native', () => ({
 }));
 
 jest.mock('request');
-jest.mock('../lib/config');
+jest.mock('@hubspot/local-dev-lib/config');
 jest.mock('../logger');
 
 describe('http', () => {

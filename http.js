@@ -3,8 +3,8 @@ const request = require('request');
 const requestPN = require('request-promise-native');
 const fs = require('fs-extra');
 const contentDisposition = require('content-disposition');
+const { getAccountConfig } = require('@hubspot/local-dev-lib/config');
 
-const { getAccountConfig } = require('./lib/config');
 const { getRequestOptions } = require('./http/requestOptions');
 const { accessTokenForPersonalAccessKey } = require('./personalAccessKey');
 const { getOauthManager } = require('./oauth');
