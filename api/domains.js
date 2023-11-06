@@ -1,4 +1,4 @@
-const http = require('../http')
+const http = require('../http');
 
 const DOMAINS_API_PATH = `/cms/v3/domains`;
 
@@ -6,10 +6,10 @@ async function fetchDomains(accountId) {
   try {
     const result = await http.get(accountId, {
       uri: DOMAINS_API_PATH,
-      json: true
+      json: true,
     });
 
-    return result.results
+    return result.results;
   } catch (err) {
     throw err;
   }
@@ -17,4 +17,4 @@ async function fetchDomains(accountId) {
 
 module.exports = {
   fetchDomains,
-}
+};
