@@ -45,8 +45,8 @@ async function fetchRawAssetByPath(accountId, path) {
 
 async function fetchModulesByPath(accountId, path) {
   return http.get(accountId, {
-    uri: `${DESIGN_MANAGER_API_PATH}/modules/by-path/${path}?portalId=${accountId}`,
-  });
+    uri: `${DESIGN_MANAGER_API_PATH}/modules/by-path/${path}?portalId=${accountId}`
+  })
 }
 
 async function fetchModulesPathStartsWith(accountId, path) {
@@ -57,8 +57,8 @@ async function fetchModulesPathStartsWith(accountId, path) {
 
 async function fetchTemplatesByPath(accountId, path) {
   return http.get(accountId, {
-    uri: `${DESIGN_MANAGER_API_PATH}/templates/by-path/${path}?portalId=${accountId}`,
-  });
+    uri: `${DESIGN_MANAGER_API_PATH}/templates/by-path/${path}?portalId=${accountId}`
+  })
 }
 
 async function fetchTemplatesPathStartsWith(accountId, path) {
