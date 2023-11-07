@@ -1,6 +1,6 @@
 {
   "name": "@hubspot/cli-lib",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Library for creating scripts for working with HubSpot",
   "license": "Apache-2.0",
   "main": "index.js",
@@ -41,9 +41,9 @@
     "unixify": "1.0.0"
   },
   "devDependencies": {
+    "@hubspot/local-dev-lib": "^0.0.8",
     "lint-staged": "^10.5.4",
-    "prettier": "^1.19.1",
-    "@hubspot/local-dev-lib": "^0.0.8"
+    "prettier": "^1.19.1"
   },
   "peerDependencies": {
     "@hubspot/local-dev-lib": "^0.0.8"
