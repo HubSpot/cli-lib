@@ -1,4 +1,4 @@
-const { get } = require('../http')
+const { get } = require('../http');
 const http = require('http');
 const https = require('https');
 const { getAccountId } = require('../lib/config');
@@ -10,7 +10,7 @@ async function fetchPreviewInfo(accountId, contentId) {
     const content = await get(accountId, {
       uri: `${CONTENT_API_PATH}/${contentId}`,
       query: { portalId: accountId },
-      json: true
+      json: true,
     });
 
     return {
@@ -49,9 +49,9 @@ const requestContentPreview = async (url, portalId) => {
   });
 
   return response;
-}
+};
 
-const requestPage = (url, redirects = 0, originalUrl=undefined) => {
+const requestPage = (url, redirects = 0, originalUrl = undefined) => {
   if (redirects > 5) {
     throw new Error(
       `Hit too many redirects to HEAD requests for ${originalUrl}`
@@ -96,12 +96,9 @@ const requestPage = (url, redirects = 0, originalUrl=undefined) => {
       })
       .end();
   });
-}
+};
 
-const fetchContentMetadata = async (
-  url,
-  portalId
-) => {
+const fetchContentMetadata = async (url, portalId) => {
   let res;
   if (url.includes('hs_preview')) {
     res = await requestContentPreview(url, portalId);
@@ -156,9 +153,9 @@ const fetchContentMetadata = async (
 
     return { portalId, contentId, hublet };
   }
-}
+};
 
 module.exports = {
   fetchPreviewInfo,
-  fetchContentMetadata
-}
+  fetchContentMetadata,
+};
