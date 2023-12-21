@@ -183,6 +183,7 @@ const createModule = async (
   }
 ) => {
   const i18nKey = 'cli.commands.create.subcommands.module';
+
   const writeModuleMeta = ({ contentTypes, moduleLabel, global }, dest) => {
     const metaData = {
       label: moduleLabel,
@@ -252,6 +253,86 @@ const createModule = async (
   );
 };
 
+const createReactModule = async (
+  moduleDefinition,
+  name,
+  dest,
+  getInternalVersion,
+  options = {
+    allowExistingDir: false,
+  }
+) => {
+  // Params shape
+  /*
+    {
+      moduleLabel: 'duh',
+      reactType: true,
+      contentTypes: [ 'PAGE' ],
+      global: false
+    }
+    test
+    /Users/tscales/hubspot-repos/Growth
+    undefined
+  */
+
+  console.log(moduleDefinition.contentTypes);
+
+  // TODO: Refactor to abstract from both create commands
+  const i18nKey = 'cli.commands.create.subcommands.module';
+  const destPath = path.join(dest, `${name}React`);
+  if (!options.allowExistingDir && fs.existsSync(destPath)) {
+    logger.error(
+      i18n(`${i18nKey}.errors.pathExists`, {
+        path: destPath,
+      })
+    );
+    return;
+  } else {
+    logger.log(
+      i18n(`${i18nKey}.creatingPath`, {
+        path: destPath,
+      })
+    );
+    fs.ensureDirSync(destPath);
+  }
+
+  logger.log(
+    i18n(`${i18nKey}.creatingModule`, {
+      path: destPath,
+    })
+  );
+
+  // meta pattern for react modules
+  const contentTypeArrayToString =
+    `[` +
+    moduleDefinition.contentTypes.map(type => {
+      return '"' + type + '"';
+    }) +
+    `]`;
+
+  const reactMeta =
+    `export const meta = {
+  label: "${moduleDefinition.moduleLabel}",
+  host_template_types:` +
+    contentTypeArrayToString +
+    `,
+  global: ${moduleDefinition.global}
+}`;
+
+  await downloadGitHubRepoContents(
+    'HubSpot/cms-sample-assets',
+    'modules/SampleJSR',
+    destPath,
+    { ref: 'ts/152-JSR-module-create' }
+  );
+
+  fs.appendFile(`${destPath}/index.tsx`, reactMeta, err => {
+    if (err) {
+      console.log(err);
+    }
+  });
+};
+
 module.exports = {
   isModuleFolder,
   isModuleFolderChild,
@@ -260,4 +341,5 @@ module.exports = {
   isModuleHTMLFile,
   isModuleCSSFile,
   createModule,
+  createReactModule,
 };
