@@ -117,6 +117,11 @@ function cleanupTempDir(tmpDir) {
   }
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function extractZipArchive(
   zip,
   name,
