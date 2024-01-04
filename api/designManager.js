@@ -49,9 +49,9 @@ async function fetchModulesByPath(accountId, path) {
   });
 }
 
-async function fetchModulesPathStartsWith(accountId, path) {
+async function fetchPreviewModules(accountId, token) {
   return http.get(accountId, {
-    uri: `${DESIGN_MANAGER_API_PATH}/modules?portalId=${accountId}&path__startswith=${path}`,
+    uri: `${DESIGN_MANAGER_API_PATH}/modules/local-preview?portalId=${accountId}&previewToken=${token}`,
   });
 }
 
@@ -61,9 +61,9 @@ async function fetchTemplatesByPath(accountId, path) {
   });
 }
 
-async function fetchTemplatesPathStartsWith(accountId, path) {
+async function fetchPreviewTemplates(accountId, token) {
   return http.get(accountId, {
-    uri: `${DESIGN_MANAGER_API_PATH}/templates?portalId=${accountId}&path__startswith=${path}`,
+    uri: `${DESIGN_MANAGER_API_PATH}/templates/local-preview?portalId=${accountId}&previewToken=${token}`,
   });
 }
 
@@ -73,7 +73,7 @@ module.exports = {
   fetchRawAssetByPath,
   fetchThemes,
   fetchModulesByPath,
-  fetchModulesPathStartsWith,
+  fetchPreviewModules,
   fetchTemplatesByPath,
-  fetchTemplatesPathStartsWith,
+  fetchPreviewTemplates,
 };
