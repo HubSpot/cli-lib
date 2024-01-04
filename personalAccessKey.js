@@ -23,6 +23,11 @@ function getRefreshKey(personalAccessKey, expiration) {
   return `${personalAccessKey}-${expiration || 'fresh'}`;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function getAccessToken(
   personalAccessKey,
   env = ENVIRONMENTS.PROD,
@@ -98,6 +103,11 @@ async function getNewAccessToken(accountId, personalAccessKey, expiresAt, env) {
   return accessToken;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function accessTokenForPersonalAccessKey(accountId) {
   const { auth, personalAccessKey, env } = getAccountConfig(accountId);
   const authTokenInfo = auth && auth.tokenInfo;
@@ -121,6 +131,10 @@ async function accessTokenForPersonalAccessKey(accountId) {
 }
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ *
  * Adds a account to the config using authType: personalAccessKey
  *
  * @param {object} configData Data containing personalAccessKey and name properties

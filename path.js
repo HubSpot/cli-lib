@@ -2,16 +2,29 @@ const path = require('path');
 const unixify = require('unixify');
 const { ALLOWED_EXTENSIONS } = require('./lib/constants');
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const convertToUnixPath = _path => {
   return unixify(path.normalize(_path));
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const convertToWindowsPath = _path => {
   const rgx = new RegExp(`\\${path.posix.sep}`, 'g');
   return path.normalize(_path).replace(rgx, path.win32.sep);
 };
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
  * Converts a Win32 path to Posix, retaining the drive letter (ex. 'c:')
  *
  * @param {string} _path
@@ -23,6 +36,11 @@ const convertToImportPath = _path => {
   return _path;
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const convertToLocalFileSystemPath = _path => {
   switch (path.sep) {
     case path.posix.sep:
@@ -45,6 +63,9 @@ const removeTrailingSlashFromSplits = parts => {
 };
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
  * Splits a filepath for local file system sources.
  *
  * @param {string} filepath
@@ -64,6 +85,9 @@ const splitLocalPath = (filepath, pathImplementation = path) => {
 };
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
  * Splits a filepath for remote sources (HubSpot).
  *
  * @param {string} filepath
@@ -80,6 +104,11 @@ const splitHubSpotPath = filepath => {
   return removeTrailingSlashFromSplits(parts);
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const getCwd = () => {
   if (process.env.INIT_CWD) {
     return process.env.INIT_CWD;
@@ -87,6 +116,11 @@ const getCwd = () => {
   return process.cwd();
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 function getExt(filepath) {
   if (typeof filepath !== 'string') return '';
   const ext = path
@@ -96,18 +130,38 @@ function getExt(filepath) {
   return ext[0] === '.' ? ext.slice(1) : ext;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const getAllowedExtensions = (allowList = []) => {
   return new Set([...Array.from(ALLOWED_EXTENSIONS), ...allowList]);
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const isAllowedExtension = (filepath, allowList = []) => {
   const ext = getExt(filepath);
   const allowedExtensions = getAllowedExtensions(allowList);
   return allowedExtensions.has(ext);
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const getAbsoluteFilePath = _path => path.resolve(getCwd(), _path);
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const isRelativePath = _path => !path.isAbsolute(_path);
 
 module.exports = {

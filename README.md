@@ -1,3 +1,7 @@
+## Deprecated
+
+This library is deprecated and is currently being replaced by the new [local-dev-lib](https://github.com/HubSpot/hubspot-local-dev-lib) library. This library will remain available for use, but no new functionality will be added to it
+
 ## Table of Contents
 
 - [Overview](#what-is-cli-lib-for)

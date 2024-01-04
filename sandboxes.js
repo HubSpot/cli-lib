@@ -10,6 +10,11 @@ const {
   fetchTypes: _fetchTypes,
 } = require('./api/sandboxes-sync');
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function createSandbox(accountId, name, type) {
   let resp;
 
@@ -25,6 +30,11 @@ async function createSandbox(accountId, name, type) {
   };
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function deleteSandbox(parentAccountId, sandboxAccountId) {
   let resp;
 
@@ -41,6 +51,11 @@ async function deleteSandbox(parentAccountId, sandboxAccountId) {
   };
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function getSandboxUsageLimits(parentAccountId, sandboxAccountId) {
   let resp;
 
@@ -53,6 +68,11 @@ async function getSandboxUsageLimits(parentAccountId, sandboxAccountId) {
   return resp && resp.usage;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function initiateSync(fromHubId, toHubId, tasks, sandboxHubId) {
   let resp;
 
@@ -65,6 +85,11 @@ async function initiateSync(fromHubId, toHubId, tasks, sandboxHubId) {
   return resp;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function fetchTaskStatus(accountId, taskId) {
   let resp;
 
@@ -77,6 +102,11 @@ async function fetchTaskStatus(accountId, taskId) {
   return resp;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function fetchTypes(accountId, toHubId) {
   let resp;
 

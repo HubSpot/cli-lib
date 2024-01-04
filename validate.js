@@ -6,6 +6,9 @@ const { logger } = require('./logger');
 const { getExt } = require('./path');
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
  * @async
  * @param {number} accountId
  * @param {string} filepath
@@ -53,6 +56,9 @@ function printHublValidationError(err) {
   logger[method]('[%d, %d]: %s', lineno, startPosition, message);
 }
 
+/**
+ * @deprecated
+ */
 function printHublValidationResult({ file, validation }) {
   let count = 0;
   const errors = getErrorsFromHublValidationObject(validation);

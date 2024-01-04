@@ -33,6 +33,12 @@ const ignoreRules = ignore().add(ignoreList);
 
 let searchDomain = null;
 let loaded = false;
+
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 function loadIgnoreConfig(isInProject = false) {
   if (loaded) {
     return;
@@ -54,6 +60,11 @@ function loadIgnoreConfig(isInProject = false) {
   loaded = true;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 function shouldIgnoreFile(file, isInProject) {
   loadIgnoreConfig(isInProject);
   const relativeTo = searchDomain || '/';
@@ -62,11 +73,21 @@ function shouldIgnoreFile(file, isInProject) {
   return !!relativePath && ignoreRules.ignores(relativePath);
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 function createIgnoreFilter(isInProject) {
   loadIgnoreConfig(isInProject);
   return file => !shouldIgnoreFile(file);
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 function ignoreFile(filePath) {
   ignoreRules.add(filePath);
 }

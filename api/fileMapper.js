@@ -169,6 +169,10 @@ async function deleteFolder(accountId, folderPath, options = {}) {
 }
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib (@hubspot/local-dev-lib/trackUsage)
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ *
  * Track CMS CLI usage
  *
  * @async
