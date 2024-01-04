@@ -1,6 +1,6 @@
 ## Deprecated
 
-This library is deprecated and is currently being replaced by the new [local-dev-lib](https://github.com/HubSpot/hubspot-local-dev-lib) library. This library will remain available for use, but no new functionality will be added to it
+:warning: This library is deprecated and is currently being replaced by the new [local-dev-lib](https://github.com/HubSpot/hubspot-local-dev-lib) library. It will remain available for use, but no new functionality will be added to it. Please consider porting to the new local-dev-lib.
 
 ## Table of Contents
 
