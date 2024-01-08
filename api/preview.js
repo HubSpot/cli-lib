@@ -1,6 +1,5 @@
 const { get } = require('../http');
 
-const CONTENT_API_PATH = `/content/api/v4/contents`;
 const COS_RENDER_PATH = `/cos-rendering/v1/public`;
 
 async function fetchPreviewRender(url, sessionInfo) {
@@ -37,24 +36,6 @@ async function fetchPreviewRender(url, sessionInfo) {
   });
 }
 
-async function fetchPreviewInfo(accountId, contentId) {
-  try {
-    const content = await get(accountId, {
-      uri: `${CONTENT_API_PATH}/${contentId}`,
-      query: { portalId: accountId },
-      json: true,
-    });
-
-    return {
-      previewDomain: content.previewDomain ?? content.resolvedDomain,
-      previewKey: content.previewKey,
-    };
-  } catch (err) {
-    throw err;
-  }
-}
-
 module.exports = {
   fetchPreviewRender,
-  fetchPreviewInfo,
 };
