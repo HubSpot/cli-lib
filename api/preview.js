@@ -22,7 +22,7 @@ async function fetchPreviewRender(url, sessionInfo) {
 
   return get(portalId, {
     baseUrl: `http://api.hubspot${env === 'qa' ? 'qa' : ''}.com`,
-    uri: COS_RENDER_PATH,
+    uri: `${COS_RENDER_PATH}${urlObject.pathname}`,
     query: {
       ...proxiedQueryParams,
       portalId,
