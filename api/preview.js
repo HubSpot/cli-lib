@@ -1,6 +1,4 @@
 const { get } = require('../http');
-const http = require('http');
-const https = require('https');
 
 const CONTENT_API_PATH = `/content/api/v4/contents`;
 const COS_RENDER_PATH = `/cos-rendering/v1/public`;
@@ -55,53 +53,6 @@ async function fetchPreviewInfo(accountId, contentId) {
     throw err;
   }
 }
-
-const requestPage = (url, redirects = 0, originalUrl = undefined) => {
-  if (redirects > 5) {
-    throw new Error(
-      `Hit too many redirects to HEAD requests for ${originalUrl}`
-    );
-  }
-
-  return new Promise((resolve, reject) => {
-    const protocolAPI = url.startsWith('https://') ? https : http;
-    protocolAPI
-      .request(
-        url,
-        {
-          method: 'HEAD',
-          headers: {
-            // Keep this user agent, so we don't get 403s from the request
-            ['User-Agent']: 'cms-dev-server',
-          },
-        },
-        async res => {
-          // Use a lib to better follow various redirects?
-          if (
-            res.statusCode >= 300 &&
-            res.statusCode < 400 &&
-            res.headers.location
-          ) {
-            console.log(`Redirecting to ${res.headers.location} (from ${url})`);
-            return resolve(
-              requestPage(
-                res.headers.location,
-                redirects + 1,
-                originalUrl ?? url
-              )
-            );
-          }
-
-          return resolve(res);
-        }
-      )
-      .on('error', err => {
-        console.error(err);
-        reject(err);
-      })
-      .end();
-  });
-};
 
 module.exports = {
   fetchPreviewRender,
