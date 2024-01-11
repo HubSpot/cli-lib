@@ -183,6 +183,7 @@ const isModuleCSSFile = filePath => MODULE_CSS_EXTENSION_REGEX.test(filePath);
  * @param {boolean} moduleDefinition.global - Identifies if the module is global
  * @param {string} name
  * @param {string} dest
+ * @param {boolean} getInternalVersion - flag to get internal spec of module
  * @param {object} options
  */
 
@@ -190,6 +191,7 @@ const createModule = async (
   moduleDefinition,
   name,
   dest,
+  getInternalVersion,
   options = {
     allowExistingDir: false,
   }
@@ -259,20 +261,50 @@ const createModule = async (
     if (!reactType) {
       fs.writeJSONSync(dest, metaData, { spaces: 2 });
     } else {
-      fs.appendFile(
-        `${dest}/index.tsx`,
-        'export const meta = ' + JSON.stringify(metaData, null, ' '),
-        err => {
-          if (err) {
-            logger.error(
-              i18n(`${i18nKey}.errors.failedToWrite`, {
-                path: `${dest}/index.tsx`,
-              })
-            );
-            return;
-          }
+      const globalImportString = getInternalVersion
+        ? 'import "./global-samplejsr.css";'
+        : '';
+      const defaultconfigString = getInternalVersion
+        ? `export const defaultModuleConfig = {
+  moduleName: "sample_jsr",
+  version: 0,
+};
+    `
+        : '';
+
+      fs.readFile(`${destPath}/index.tsx`, 'utf8', function(err, data) {
+        if (err) {
+          logger.error(
+            i18n(`${i18nKey}.errors.fileReadFailure`, {
+              path: `${dest}/index.tsx`,
+            })
+          );
+          return;
         }
-      );
+
+        const result = data
+          .replace(/\/\* import global styles \*\//g, globalImportString)
+          .replace(/\/\* Default config \*\//g, defaultconfigString);
+
+        fs.writeFile(`${destPath}/index.tsx`, result, 'utf8', function(err) {
+          if (err) return console.log(err);
+        });
+
+        fs.appendFile(
+          `${dest}/index.tsx`,
+          'export const meta = ' + JSON.stringify(metaData, null, ' '),
+          err => {
+            if (err) {
+              logger.error(
+                i18n(`${i18nKey}.errors.failedToWrite`, {
+                  path: `${dest}/index.tsx`,
+                })
+              );
+              return;
+            }
+          }
+        );
+      });
     }
   };
 
@@ -293,6 +325,9 @@ const createModule = async (
       case 'global-samplejsr.css':
       case 'stories':
       case 'tests':
+        if (getInternalVersion) {
+          return true;
+        }
         return false;
       default:
         return true;
@@ -300,24 +335,18 @@ const createModule = async (
   };
 
   // Download gitHub contents to the dest directory
-  const sampleAssetPath = !isReactModule
-    ? 'Sample.module'
-    : 'SampleJSRInternal';
-
-  // TEMPORARY - REMOVE WHEN SAMPLE ASSET IS MERGED
-  const refBranch = !isReactModule ? '' : 'ts/152-JSR-module-create';
+  const sampleAssetPath = !isReactModule ? 'Sample.module' : 'SampleJSR';
 
   await downloadGitHubRepoContents(
     'HubSpot/cms-sample-assets',
     `modules/${sampleAssetPath}`,
     destPath,
-    { filter: moduleFileFilter, ref: refBranch }
+    { filter: moduleFileFilter }
   );
 
+  // Mutating React module files after fetch
   if (isReactModule) {
     writeModuleMeta(moduleDefinition, destPath);
-
-    // TODO: Go into index.tsx and find/replace some string to add import and defaultconfig
   }
 };
 

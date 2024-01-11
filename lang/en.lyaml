@@ -23,6 +23,7 @@ en:
             errors:
               pathExists: "The {{ path }} path already exists"
               failedToWriteMeta: "There was an problem writing the module's meta data at {{ path }}"
+              fileReadFailure: "Failed to read file at {{ path }}"
       project:
         subcommands:
           watch:
