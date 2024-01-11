@@ -22,6 +22,7 @@ en:
             creatingPath: "Creating {{ path }}"
             errors:
               pathExists: "The {{ path }} path already exists"
+              failedToWriteMeta: "There was an problem writing the module's meta data at {{ path }}"
       project:
         subcommands:
           watch:

@@ -174,6 +174,18 @@ const isModuleHTMLFile = filePath => MODULE_HTML_EXTENSION_REGEX.test(filePath);
  */
 const isModuleCSSFile = filePath => MODULE_CSS_EXTENSION_REGEX.test(filePath);
 
+/**
+ * Creates a sample module in the specified destination locally
+ * @param {object} moduleDefinition
+ * @param {string} moduleDefinition.moduleLabel - Label for the module
+ * @param {boolean} moduleDefinition.reactType - Identifies if the module is a JSR type
+ * @param {Array<String>} moduleDefinition.contentTypes - List of content types that the module can be used with
+ * @param {boolean} moduleDefinition.global - Identifies if the module is global
+ * @param {string} name
+ * @param {string} dest
+ * @param {object} options
+ */
+
 const createModule = async (
   moduleDefinition,
   name,
@@ -183,8 +195,53 @@ const createModule = async (
   }
 ) => {
   const i18nKey = 'cli.commands.create.subcommands.module';
+  const { reactType: isReactModule } = moduleDefinition;
 
-  const writeModuleMeta = ({ contentTypes, moduleLabel, global }, dest) => {
+  // Ascertain the module's dest path based on module type
+  const parseDestPath = (name, dest, isReactModule) => {
+    const folderName = name.endsWith('.module') ? name : `${name}.module`;
+
+    const modulePath = !isReactModule
+      ? path.join(dest, folderName)
+      : path.join(dest, `${name}`);
+
+    return modulePath;
+  };
+
+  const destPath = parseDestPath(name, dest, isReactModule);
+
+  // Create module directory
+  const createModuleDirectory = (allowExistingDir, destPath) => {
+    if (!allowExistingDir && fs.existsSync(destPath)) {
+      logger.error(
+        i18n(`${i18nKey}.errors.pathExists`, {
+          path: destPath,
+        })
+      );
+      return;
+    } else {
+      logger.log(
+        i18n(`${i18nKey}.creatingPath`, {
+          path: destPath,
+        })
+      );
+      fs.ensureDirSync(destPath);
+    }
+
+    logger.log(
+      i18n(`${i18nKey}.creatingModule`, {
+        path: destPath,
+      })
+    );
+  };
+
+  createModuleDirectory(options.allowExistingDir, destPath);
+
+  // Write module meta
+  const writeModuleMeta = (
+    { moduleLabel, contentTypes, global, reactType },
+    dest
+  ) => {
     const metaData = {
       label: moduleLabel,
       css_assets: [],
@@ -199,9 +256,27 @@ const createModule = async (
       is_available_for_new_content: false,
     };
 
-    fs.writeJSONSync(dest, metaData, { spaces: 2 });
+    if (!reactType) {
+      fs.writeJSONSync(dest, metaData, { spaces: 2 });
+    } else {
+      fs.appendFile(
+        `${dest}/index.tsx`,
+        'export const meta = ' + JSON.stringify(metaData, null, ' '),
+        err => {
+          if (err) {
+            logger.error(
+              i18n(`${i18nKey}.errors.failedToWrite`, {
+                path: `${dest}/index.tsx`,
+              })
+            );
+            return;
+          }
+        }
+      );
+    }
   };
 
+  // Filter out ceratin fetched files from the response
   const moduleFileFilter = (src, dest) => {
     const emailEnabled = moduleDefinition.contentTypes.includes('EMAIL');
 
@@ -215,122 +290,35 @@ const createModule = async (
           return false;
         }
         return true;
+      case 'global-samplejsr.css':
+      case 'stories':
+      case 'tests':
+        return false;
       default:
         return true;
     }
   };
 
-  const folderName =
-    !name || name.endsWith('.module') ? name : `${name}.module`;
-  const destPath = path.join(dest, folderName);
-  if (!options.allowExistingDir && fs.existsSync(destPath)) {
-    logger.error(
-      i18n(`${i18nKey}.errors.pathExists`, {
-        path: destPath,
-      })
-    );
-    return;
-  } else {
-    logger.log(
-      i18n(`${i18nKey}.creatingPath`, {
-        path: destPath,
-      })
-    );
-    fs.ensureDirSync(destPath);
-  }
+  // Download gitHub contents to the dest directory
+  const sampleAssetPath = !isReactModule
+    ? 'Sample.module'
+    : 'SampleJSRInternal';
 
-  logger.log(
-    i18n(`${i18nKey}.creatingModule`, {
-      path: destPath,
-    })
-  );
+  // TEMPORARY - REMOVE WHEN SAMPLE ASSET IS MERGED
+  const refBranch = !isReactModule ? '' : 'ts/152-JSR-module-create';
 
   await downloadGitHubRepoContents(
     'HubSpot/cms-sample-assets',
-    'modules/Sample.module',
+    `modules/${sampleAssetPath}`,
     destPath,
-    { filter: moduleFileFilter }
+    { filter: moduleFileFilter, ref: refBranch }
   );
-};
 
-const createReactModule = async (
-  moduleDefinition,
-  name,
-  dest,
-  getInternalVersion,
-  options = {
-    allowExistingDir: false,
+  if (isReactModule) {
+    writeModuleMeta(moduleDefinition, destPath);
+
+    // TODO: Go into index.tsx and find/replace some string to add import and defaultconfig
   }
-) => {
-  // Params shape
-  /*
-    {
-      moduleLabel: 'duh',
-      reactType: true,
-      contentTypes: [ 'PAGE' ],
-      global: false
-    }
-    test
-    /Users/tscales/hubspot-repos/Growth
-    undefined
-  */
-
-  console.log(moduleDefinition.contentTypes);
-
-  // TODO: Refactor to abstract from both create commands
-  const i18nKey = 'cli.commands.create.subcommands.module';
-  const destPath = path.join(dest, `${name}React`);
-  if (!options.allowExistingDir && fs.existsSync(destPath)) {
-    logger.error(
-      i18n(`${i18nKey}.errors.pathExists`, {
-        path: destPath,
-      })
-    );
-    return;
-  } else {
-    logger.log(
-      i18n(`${i18nKey}.creatingPath`, {
-        path: destPath,
-      })
-    );
-    fs.ensureDirSync(destPath);
-  }
-
-  logger.log(
-    i18n(`${i18nKey}.creatingModule`, {
-      path: destPath,
-    })
-  );
-
-  // meta pattern for react modules
-  const contentTypeArrayToString =
-    `[` +
-    moduleDefinition.contentTypes.map(type => {
-      return '"' + type + '"';
-    }) +
-    `]`;
-
-  const reactMeta =
-    `export const meta = {
-  label: "${moduleDefinition.moduleLabel}",
-  host_template_types:` +
-    contentTypeArrayToString +
-    `,
-  global: ${moduleDefinition.global}
-}`;
-
-  await downloadGitHubRepoContents(
-    'HubSpot/cms-sample-assets',
-    'modules/SampleJSR',
-    destPath,
-    { ref: 'ts/152-JSR-module-create' }
-  );
-
-  fs.appendFile(`${destPath}/index.tsx`, reactMeta, err => {
-    if (err) {
-      console.log(err);
-    }
-  });
 };
 
 module.exports = {
@@ -341,5 +329,4 @@ module.exports = {
   isModuleHTMLFile,
   isModuleCSSFile,
   createModule,
-  createReactModule,
 };
