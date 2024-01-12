@@ -272,7 +272,7 @@ const createModule = async (
     `
         : '';
 
-      fs.readFile(`${destPath}/index.tsx`, 'utf8', function(err, data) {
+      fs.readFile(`${destPath}/index.tsx`, 'utf8', (err, data) => {
         if (err) {
           logger.error(
             i18n(`${i18nKey}.errors.fileReadFailure`, {
@@ -286,7 +286,7 @@ const createModule = async (
           .replace(/\/\* import global styles \*\//g, globalImportString)
           .replace(/\/\* Default config \*\//g, defaultconfigString);
 
-        fs.writeFile(`${destPath}/index.tsx`, result, 'utf8', (err) => {
+        fs.writeFile(`${destPath}/index.tsx`, result, 'utf8', err => {
           if (err) return console.log(err);
         });
 
