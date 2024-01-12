@@ -286,7 +286,7 @@ const createModule = async (
           .replace(/\/\* import global styles \*\//g, globalImportString)
           .replace(/\/\* Default config \*\//g, defaultconfigString);
 
-        fs.writeFile(`${destPath}/index.tsx`, result, 'utf8', function(err) {
+        fs.writeFile(`${destPath}/index.tsx`, result, 'utf8', (err) => {
           if (err) return console.log(err);
         });
 
