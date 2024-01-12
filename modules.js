@@ -335,7 +335,9 @@ const createModule = async (
   };
 
   // Download gitHub contents to the dest directory
-  const sampleAssetPath = !isReactModule ? 'Sample.module' : 'SampleJSR';
+  const sampleAssetPath = !isReactModule
+    ? 'Sample.module'
+    : 'SampleReactModule';
 
   await downloadGitHubRepoContents(
     'HubSpot/cms-sample-assets',
