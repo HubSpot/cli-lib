@@ -140,6 +140,13 @@ async function cloneGitHubRepo(dest, type, repoPath, sourceDir, options = {}) {
   return success;
 }
 
+/**
+ * Returns the contents of a repo in JSON format
+ * @param {string} repoPath
+ * @param {string} path
+ * @param {string} ref - The name of the commit/branch/tag. Default: the repository’s default branch.
+ */
+
 async function getGitHubRepoContentsAtPath(repoPath, path, ref) {
   const refQuery = ref ? `?ref=${ref}` : '';
   const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}${refQuery}`;
@@ -253,8 +260,53 @@ async function downloadGitHubRepoContents(
   }
 }
 
+/**
+ *
+ */
+
+async function listGitHubRepoContentsAtPath(repoPath, path, ref) {
+  try {
+    const contentsResp = await getGitHubRepoContentsAtPath(repoPath, path, ref);
+
+    const listContents = async contentPiece => {
+      const { name, type: contentPieceType } = contentPiece;
+
+      if (contentPieceType === 'dir') {
+        return name;
+      }
+    };
+
+    let contentPromises;
+    if (Array.isArray(contentsResp)) {
+      contentPromises = contentsResp.map(listContents);
+      return Promise.all(contentPromises);
+    } else {
+      contentPromises = listContents(contentsResp);
+      return Promise.resolve(contentPromises);
+    }
+  } catch (e) {
+    if (e.statusCode === 404) {
+      if (e.error && e.error.message) {
+        throw new Error(`Failed to fetch contents: ${e.error.message}`);
+      }
+    }
+
+    if (e.statusCode >= 500 && e.statusCode <= 599) {
+      if (e.error && e.error.message) {
+        throw new Error(`Failed to fetch contents: ${e.error.message}`);
+      } else {
+        throw new Error('Failed to fetch contents: Check the status of GitHub');
+      }
+    }
+
+    throw new Error(e);
+  }
+}
+
 module.exports = {
   cloneGitHubRepo,
+  getGitHubRepoContentsAtPath,
+  listGitHubRepoContentsAtPath,
   downloadGitHubRepoContents,
   fetchJsonFromRepository,
   fetchReleaseData,

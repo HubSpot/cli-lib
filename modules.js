@@ -5,7 +5,10 @@ const { walk } = require('./lib/walk');
 const { logger } = require('./logger');
 const { i18n } = require('./lib/lang');
 const { MODULE_EXTENSION } = require('./lib/constants');
-const { downloadGitHubRepoContents } = require('./github');
+const {
+  downloadGitHubRepoContents,
+  listGitHubRepoContentsAtPath,
+} = require('./github');
 
 // Matches files named module.html
 const MODULE_HTML_EXTENSION_REGEX = new RegExp(
@@ -365,6 +368,14 @@ const createModule = async (
   }
 };
 
+const listReactModules = async () => {
+  const contentsResp = await listGitHubRepoContentsAtPath(
+    'HubSpot/cms-sample-assets',
+    'modules/'
+  );
+  return contentsResp;
+};
+
 module.exports = {
   isModuleFolder,
   isModuleFolderChild,
@@ -373,4 +384,5 @@ module.exports = {
   isModuleHTMLFile,
   isModuleCSSFile,
   createModule,
+  listReactModules,
 };
