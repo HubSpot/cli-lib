@@ -43,19 +43,26 @@ async function createProject(accountId, name) {
  * @param {string} projectFile
  * @returns {Promise}
  */
+
 async function uploadProject(
   accountId,
   projectName,
   projectFile,
-  uploadMessage
+  uploadMessage,
+  platformVersion
 ) {
+  const formData = {
+    file: fs.createReadStream(projectFile),
+    uploadMessage,
+  };
+  if (platformVersion) {
+    formData.platformVersion = platformVersion;
+  }
+
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/upload/${encodeURIComponent(projectName)}`,
     timeout: 60000,
-    formData: {
-      file: fs.createReadStream(projectFile),
-      uploadMessage,
-    },
+    formData,
   });
 }
 
@@ -85,9 +92,9 @@ async function downloadProject(accountId, projectName, buildId) {
   return http.get(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/${buildId}/archive`,
+    )}/builds/${buildId}/archive-full`,
     encoding: null,
-    headers: { accept: 'application/octet-stream' },
+    headers: { accept: 'application/zip', contentType: 'application/json' },
   });
 }
 
@@ -244,11 +251,15 @@ async function fetchDeployComponentsMetadata(accountId, projectId) {
  * @param {string} projectName
  * @returns {Promise}
  */
-async function provisionBuild(accountId, projectName) {
+async function provisionBuild(accountId, projectName, platformVersion) {
+  const requestString = platformVersion
+    ? `/builds/staged/provision?platformVersion=${platformVersion}`
+    : '/builds/staged/provision';
+
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/staged/provision`,
+    )}${requestString}`,
     timeout: 50000,
   });
 }
@@ -261,11 +272,15 @@ async function provisionBuild(accountId, projectName) {
  * @param {string} projectName
  * @returns {Promise}
  */
-async function queueBuild(accountId, projectName) {
+async function queueBuild(accountId, projectName, platformVersion) {
+  const requestString = platformVersion
+    ? `/builds/staged/queue?platformVersion=${platformVersion}`
+    : '/builds/staged/queue';
+
   return http.post(accountId, {
     uri: `${PROJECTS_API_PATH}/${encodeURIComponent(
       projectName
-    )}/builds/staged/queue`,
+    )}${requestString}`,
   });
 }
 

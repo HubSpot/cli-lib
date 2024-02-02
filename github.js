@@ -17,16 +17,19 @@ const GITHUB_AUTH_HEADERS = {
 
 /**
  * @param {String} filePath - path where config file is stored
- * @param {String} repoName - name of the github repository
+ * @param {String} repoPath - path to the github repository ({username}/{reponame})
+ * @param {boolean} isCustomPath - true if users pass a path flag to the CLI
+ * @param {String | undefined} - branch to fetch from. if undefined, default branch used
  * @returns {Buffer|Null} Zip data buffer
  */
 async function fetchJsonFromRepository(
-  repoName = 'HubSpot/hubspot-project-components',
+  repoPath,
   filePath,
-  repoPath = false
+  ref,
+  isCustomPath = false
 ) {
   try {
-    const URI = `https://raw.githubusercontent.com/${repoName}/${filePath}`;
+    const URI = `https://raw.githubusercontent.com/${repoPath}/${ref}/${filePath}`;
     logger.debug(`Fetching ${URI}...`);
 
     return await request.get(URI, {
@@ -34,7 +37,7 @@ async function fetchJsonFromRepository(
       headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
     });
   } catch (err) {
-    if (repoPath && err.statusCode === 404) {
+    if (isCustomPath && err.statusCode === 404) {
       logger.error(
         i18n(`cli.lib.prompts.createProjectPrompt.errors.failedToFetchJson`)
       );
@@ -49,17 +52,17 @@ async function fetchJsonFromRepository(
 
 /**
  * https://developer.github.com/v3/repos/releases/#get-the-latest-release
- * @param {String} repoName - Name of GitHub repository to fetch.
+ * @param {String} repoPath - Path to GitHub repository to fetch. ({username}/{reponame})
  * @param {String} tag - Git tag to fetch for. If omitted latest will be fetched.
  */
-async function fetchReleaseData(repoName, tag = '') {
+async function fetchReleaseData(repoPath, tag = '') {
   tag = tag.trim().toLowerCase();
   if (tag.length && tag[0] !== 'v') {
     tag = `v${tag}`;
   }
   const URI = tag
-    ? `https://api.github.com/repos/HubSpot/${repoName}/releases/tags/${tag}`
-    : `https://api.github.com/repos/HubSpot/${repoName}/releases/latest`;
+    ? `https://api.github.com/repos/${repoPath}/releases/tags/${tag}`
+    : `https://api.github.com/repos/${repoPath}/releases/latest`;
   try {
     return await request.get(URI, {
       headers: { ...DEFAULT_USER_AGENT_HEADERS, ...GITHUB_AUTH_HEADERS },
@@ -77,13 +80,13 @@ async function fetchReleaseData(repoName, tag = '') {
 }
 
 /**
- * @param {String} repoName - Name of GitHub repository to download.
+ * @param {String} repoPath - Path to GitHub repository to download. ({username}/{reponame})
  * @param {String} tag - Git tag to fetch for. If omitted latest will be fetched.
  * @param {String} releaseType - type of content
  * @returns {Buffer|Null} Zip data buffer
  */
 async function downloadGithubRepoZip(
-  repoName,
+  repoPath,
   tag = '',
   releaseType = GITHUB_RELEASE_TYPES.RELEASE,
   ref
@@ -91,12 +94,12 @@ async function downloadGithubRepoZip(
   try {
     let zipUrl;
     if (releaseType === GITHUB_RELEASE_TYPES.REPOSITORY) {
-      logger.log(`Fetching ${releaseType} with name ${repoName}...`);
-      zipUrl = `https://api.github.com/repos/HubSpot/${repoName}/zipball${
+      logger.log(`Fetching ${releaseType} with name ${repoPath}...`);
+      zipUrl = `https://api.github.com/repos/${repoPath}/zipball${
         ref ? `/${ref}` : ''
       }`;
     } else {
-      const releaseData = await fetchReleaseData(repoName, tag);
+      const releaseData = await fetchReleaseData(repoPath, tag);
       if (!releaseData) return;
       ({ zipball_url: zipUrl } = releaseData);
       const { name } = releaseData;
@@ -119,15 +122,16 @@ async function downloadGithubRepoZip(
  * Writes a copy of the boilerplate project to dest.
  * @param {String} dest - Dir to write project src to.
  * @param {String} type - Type of project to create.
- * @param {String} repoName - Name of GitHub repository to clone.
+ * @param {String} repoPath - Path to GitHub repository to clone. ({username}/{reponame})
  * @param {String} sourceDir - Directory in project that should get copied.
  * @param {Object} options
  * @returns {Boolean} `true` if successful, `false` otherwise.
  */
-async function cloneGitHubRepo(dest, type, repoName, sourceDir, options = {}) {
+async function cloneGitHubRepo(dest, type, repoPath, sourceDir, options = {}) {
   const { themeVersion, projectVersion, releaseType, ref } = options;
   const tag = projectVersion || themeVersion;
-  const zip = await downloadGithubRepoZip(repoName, tag, releaseType, ref);
+  const zip = await downloadGithubRepoZip(repoPath, tag, releaseType, ref);
+  const repoName = repoPath.split('/')[1];
   const success = await extractZipArchive(zip, repoName, dest, { sourceDir });
 
   if (success) {
@@ -136,11 +140,9 @@ async function cloneGitHubRepo(dest, type, repoName, sourceDir, options = {}) {
   return success;
 }
 
-async function getGitHubRepoContentsAtPath(
-  repoPath = 'HubSpot/hubspot-project-components',
-  path
-) {
-  const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}`;
+async function getGitHubRepoContentsAtPath(repoPath, path, ref) {
+  const refQuery = ref ? `?ref=${ref}` : '';
+  const contentsRequestUrl = `https://api.github.com/repos/${repoPath}/contents/${path}${refQuery}`;
 
   return request.get(contentsRequestUrl, {
     json: true,
@@ -159,24 +161,26 @@ async function fetchGitHubRepoContentFromDownloadUrl(dest, downloadUrl) {
 /**
  * Writes files from a HubSpot public repository to the destination folder
  * @param {String} dest - Dir to write contents to
- * @param {String} repoName - Name of GitHub repository to fetch contents from
+ * @param {String} repoPath - Path to GitHub repository to fetch contents from ({username}/{reponame})
  * @param {String} path - Path to obtain contents from within repository
  * @returns {Boolean} `true` if successful, `false` otherwise.
  */
 async function downloadGitHubRepoContents(
-  repoName,
+  repoPath,
   contentPath,
   dest,
   options = {
     filter: false,
+    ref: '',
   }
 ) {
   fs.ensureDirSync(path.dirname(dest));
 
   try {
     const contentsResp = await getGitHubRepoContentsAtPath(
-      repoName,
-      contentPath
+      repoPath,
+      contentPath,
+      options.ref
     );
 
     const downloadContentRecursively = async contentPiece => {
@@ -203,8 +207,9 @@ async function downloadGitHubRepoContents(
 
       if (contentPieceType === 'dir') {
         const innerDirContent = await getGitHubRepoContentsAtPath(
-          repoName,
-          contentPiecePath
+          repoPath,
+          contentPiecePath,
+          options.ref
         );
         return Promise.all(innerDirContent.map(downloadContentRecursively));
       } else {
@@ -231,8 +236,16 @@ async function downloadGitHubRepoContents(
     }
   } catch (e) {
     if (e.statusCode === 404) {
-      if (e.error.message) {
+      if (e.error && e.error.message) {
         throw new Error(`Failed to fetch contents: ${e.error.message}`);
+      }
+    }
+
+    if (e.statusCode >= 500 && e.statusCode <= 599) {
+      if (e.error && e.error.message) {
+        throw new Error(`Failed to fetch contents: ${e.error.message}`);
+      } else {
+        throw new Error('Failed to fetch contents: Check the status of GitHub');
       }
     }
 
@@ -244,4 +257,5 @@ module.exports = {
   cloneGitHubRepo,
   downloadGitHubRepoContents,
   fetchJsonFromRepository,
+  fetchReleaseData,
 };

@@ -1,12 +1,13 @@
 {
   "name": "@hubspot/cli-lib",
-  "version": "4.1.15",
+  "version": "5.0.1",
   "description": "Library for creating scripts for working with HubSpot",
   "license": "Apache-2.0",
   "main": "index.js",
+  "homepage": "https://github.com/HubSpot/cli-lib#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HubSpot/hubspot-cms-tools"
+    "url": "https://github.com/HubSpot/cli-lib"
   },
   "scripts": {
     "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on main branch' && exit 1)",
