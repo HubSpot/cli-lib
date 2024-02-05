@@ -1,3 +1,5 @@
+const { request } = require('../http');
+
 async function fetchPreviewRender(url, sessionInfo) {
   const { sessionToken } = sessionInfo;
 
@@ -6,7 +8,7 @@ async function fetchPreviewRender(url, sessionInfo) {
   urlObject.searchParams.append('localPreviewToken', sessionToken);
   urlObject.searchParams.append('hsCacheBuster', Date.now());
 
-  return fetch(urlObject.href).then(res => res.text());
+  return request(urlObject.href).then(res => res.text());
 }
 
 module.exports = {
