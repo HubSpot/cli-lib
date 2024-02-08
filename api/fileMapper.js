@@ -4,7 +4,7 @@ const path = require('path');
 const contentDisposition = require('content-disposition');
 const http = require('../http');
 const { getCwd } = require('../path');
-const { getEnv, getAccountConfig } = require('../lib/config');
+const { getEnv, getAccountConfig } = require('@hubspot/local-dev-lib/config');
 const { logger } = require('../logger');
 
 const FILE_MAPPER_API_PATH = 'content/filemapper/v1';
@@ -169,6 +169,10 @@ async function deleteFolder(accountId, folderPath, options = {}) {
 }
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib (@hubspot/local-dev-lib/trackUsage)
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ *
  * Track CMS CLI usage
  *
  * @async

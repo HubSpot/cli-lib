@@ -7,6 +7,11 @@ const { fetchSchemas, fetchSchema } = require('./api/schema');
 const chalk = require('chalk');
 const { table, getBorderCharacters } = require('table');
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const logSchemas = schemas => {
   const data = schemas
     .map(r => [r.labels.singular, r.name, r.objectTypeId || ''])
@@ -25,6 +30,11 @@ const logSchemas = schemas => {
   logger.log(data.length ? table(data, tableConfig) : 'No Schemas were found');
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const cleanSchema = schema => {
   const parsedSchema = {};
   parsedSchema.name = schema.name;
@@ -47,12 +57,22 @@ const cleanSchema = schema => {
   return parsedSchema;
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const getResolvedPath = (dest, name) => {
   if (name) return path.resolve(getCwd(), dest || '', `${name}.json`);
 
   return path.resolve(getCwd(), dest || '');
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const writeSchemaToDisk = (schema, dest) =>
   fs.outputFileSync(
     getResolvedPath(dest, schema.name),
@@ -61,11 +81,21 @@ const writeSchemaToDisk = (schema, dest) =>
     })
   );
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const listSchemas = async accountId => {
   const response = await fetchSchemas(accountId);
   logSchemas(response.results);
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const downloadSchemas = async (accountId, dest) => {
   const response = await fetchSchemas(accountId);
   logSchemas(response.results);
@@ -77,6 +107,11 @@ const downloadSchemas = async (accountId, dest) => {
   return;
 };
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 const downloadSchema = async (accountId, schemaObjectType, dest) => {
   const response = await fetchSchema(accountId, schemaObjectType);
   writeSchemaToDisk(response, dest);

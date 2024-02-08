@@ -1,12 +1,13 @@
 const moment = require('moment');
-const { HubSpotAuthError } = require('./lib/models/Errors');
 const {
   getEnv,
   getAccountConfig,
   updateAccountConfig,
   updateDefaultAccount,
   writeConfig,
-} = require('./lib/config');
+} = require('@hubspot/local-dev-lib/config');
+
+const { HubSpotAuthError } = require('./lib/models/Errors');
 const { getValidEnv } = require('./lib/environment');
 const {
   PERSONAL_ACCESS_KEY_AUTH_METHOD,
@@ -22,6 +23,11 @@ function getRefreshKey(personalAccessKey, expiration) {
   return `${personalAccessKey}-${expiration || 'fresh'}`;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function getAccessToken(
   personalAccessKey,
   env = ENVIRONMENTS.PROD,
@@ -102,6 +108,11 @@ async function getNewAccessToken(accountId, personalAccessKey, expiresAt, env, f
   return accessTokenResponse.accessToken;
 }
 
+/**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ */
 async function accessTokenForPersonalAccessKey(accountId) {
   const { auth, personalAccessKey, env } = getAccountConfig(accountId);
   const authTokenInfo = auth && auth.tokenInfo;
@@ -139,6 +150,10 @@ async function enabledFeaturesForPersonalAccessKey(accountId) {
 
 
 /**
+ * @deprecated
+ * Use the corresponding export from local-dev-lib
+ * https://github.com/HubSpot/hubspot-local-dev-lib
+ *
  * Adds a account to the config using authType: personalAccessKey
  *
  * @param {object} configData Data containing personalAccessKey and name properties

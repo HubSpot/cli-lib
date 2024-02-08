@@ -1,5 +1,9 @@
+const {
+  updateAccountConfig,
+  writeConfig,
+} = require('@hubspot/local-dev-lib/config');
+
 const OAuth2Manager = require('./lib/models/OAuth2Manager');
-const { updateAccountConfig, writeConfig } = require('./lib/config');
 const { logger } = require('./logger');
 const { logErrorInstance } = require('./errorHandlers/standardErrors');
 const { AUTH_METHODS } = require('./lib/constants');

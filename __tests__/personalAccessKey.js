@@ -1,11 +1,14 @@
 const moment = require('moment');
-const { getAndLoadConfigIfNeeded, getAccountConfig } = require('../lib/config');
+const {
+  getAndLoadConfigIfNeeded,
+  getAccountConfig,
+} = require('@hubspot/local-dev-lib/config');
 const { fetchAccessToken } = require('../api/localDevAuth/unauthenticated');
 const { ENVIRONMENTS } = require('../lib/constants');
 
 const { accessTokenForPersonalAccessKey } = require('../personalAccessKey');
 
-jest.mock('../lib/config');
+jest.mock('@hubspot/local-dev-lib/config');
 jest.mock('../logger');
 jest.mock('../api/localDevAuth/unauthenticated');
 

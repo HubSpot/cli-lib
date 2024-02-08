@@ -1,5 +1,6 @@
+const { getAccountConfig } = require('@hubspot/local-dev-lib/config');
+
 const { logger } = require('../logger');
-const { getAccountConfig } = require('../lib/config');
 const {
   SCOPE_GROUPS,
   PERSONAL_ACCESS_KEY_AUTH_METHOD,
