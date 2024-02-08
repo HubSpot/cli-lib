@@ -52,5 +52,3 @@ en:
           fieldsJsSyntaxError: "There was an error converting JS file \"{{ path }}\""
           fieldsJsNotReturnArray: "There was an error loading JS file \"{{ path }}\". Expected type \"Array\" but received type \"{{ returned }}\" . Make sure that your function returns an array"
           fieldsJsNotFunction:  "There was an error loading JS file \"{{ path }}\". Expected type \"Function\" but received type \"{{ returned }}\". Make sure that your default export is a function."
-
-

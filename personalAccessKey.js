@@ -43,6 +43,7 @@ async function getAccessToken(
     accessToken: response.oauthAccessToken,
     expiresAt: moment(response.expiresAtMillis),
     scopeGroups: response.scopeGroups,
+    enabledFeatures: response.enabledFeatures,
     encodedOauthRefreshToken: response.encodedOauthRefreshToken,
   };
 }
@@ -52,11 +53,12 @@ async function refreshAccessToken(
   personalAccessKey,
   env = ENVIRONMENTS.PROD
 ) {
-  const { accessToken, expiresAt } = await getAccessToken(
+  const accessTokenResponse = await getAccessToken(
     personalAccessKey,
     env,
     accountId
   );
+  const { accessToken, expiresAt } = accessTokenResponse
   const config = getAccountConfig(accountId);
 
   updateAccountConfig({
@@ -69,15 +71,15 @@ async function refreshAccessToken(
   });
   writeConfig();
 
-  return accessToken;
+  return accessTokenResponse;
 }
 
-async function getNewAccessToken(accountId, personalAccessKey, expiresAt, env) {
+async function getNewAccessToken(accountId, personalAccessKey, expiresAt, env, fullAPIResponse=false) {
   const key = getRefreshKey(personalAccessKey, expiresAt);
   if (refreshRequests.has(key)) {
     return refreshRequests.get(key);
   }
-  let accessToken;
+  let accessTokenResponse;
   try {
     const refreshAccessPromise = refreshAccessToken(
       accountId,
@@ -87,14 +89,17 @@ async function getNewAccessToken(accountId, personalAccessKey, expiresAt, env) {
     if (key) {
       refreshRequests.set(key, refreshAccessPromise);
     }
-    accessToken = await refreshAccessPromise;
+    accessTokenResponse = await refreshAccessPromise;
   } catch (e) {
     if (key) {
       refreshRequests.delete(key);
     }
     throw e;
   }
-  return accessToken;
+  if (fullAPIResponse) {
+    return accessTokenResponse;
+  }
+  return accessTokenResponse.accessToken;
 }
 
 async function accessTokenForPersonalAccessKey(accountId) {
@@ -118,6 +123,20 @@ async function accessTokenForPersonalAccessKey(accountId) {
 
   return auth.tokenInfo.accessToken;
 }
+async function enabledFeaturesForPersonalAccessKey(accountId) {
+  const { auth, personalAccessKey, env } = getAccountConfig(accountId);
+  const authTokenInfo = auth && auth.tokenInfo;
+
+  const accessTokenResponse = await getNewAccessToken(
+    accountId,
+    personalAccessKey,
+    authTokenInfo && authTokenInfo.expiresAt,
+    env,
+    fullAPIResponse=true
+  )
+  return accessTokenResponse.enabledFeatures;
+}
+
 
 /**
  * Adds a account to the config using authType: personalAccessKey
@@ -179,6 +198,7 @@ const updateConfigWithPersonalAccessKey = async (configData, makeDefault) => {
 
 module.exports = {
   accessTokenForPersonalAccessKey,
+  enabledFeaturesForPersonalAccessKey,
   updateConfigWithPersonalAccessKey,
   getAccessToken,
 };
