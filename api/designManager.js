@@ -43,9 +43,37 @@ async function fetchRawAssetByPath(accountId, path) {
   });
 }
 
+async function fetchModulesByPath(accountId, path) {
+  return http.get(accountId, {
+    uri: `${DESIGN_MANAGER_API_PATH}/modules/by-path/${path}?portalId=${accountId}`,
+  });
+}
+
+async function fetchPreviewModules(accountId, token) {
+  return http.get(accountId, {
+    uri: `${DESIGN_MANAGER_API_PATH}/modules/local-preview?portalId=${accountId}&previewToken=${token}`,
+  });
+}
+
+async function fetchTemplatesByPath(accountId, path) {
+  return http.get(accountId, {
+    uri: `${DESIGN_MANAGER_API_PATH}/templates/by-path/${path}?portalId=${accountId}`,
+  });
+}
+
+async function fetchPreviewTemplates(accountId, token) {
+  return http.get(accountId, {
+    uri: `${DESIGN_MANAGER_API_PATH}/templates/local-preview?portalId=${accountId}&previewToken=${token}`,
+  });
+}
+
 module.exports = {
   fetchBuiltinMapping,
   fetchMenus,
   fetchRawAssetByPath,
   fetchThemes,
+  fetchModulesByPath,
+  fetchPreviewModules,
+  fetchTemplatesByPath,
+  fetchPreviewTemplates,
 };
